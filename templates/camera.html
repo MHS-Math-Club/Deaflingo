@@ -9,9 +9,10 @@
             crossorigin="anonymous"></script>
 </head>
 <body onload="startWebcam()">
+    <img id="photoElement">
     <video id="videoElement" autoplay></video>
     <canvas id="canvasElement" style="display: none;"></canvas>
-    <img id="photoElement">
+
 
     <form id="sendImage" method="POST" action="/">
         <input id="imageString" type="hidden" name="photo"/>

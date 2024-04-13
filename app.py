@@ -16,12 +16,12 @@ def update():
         return
 
     # Rotate the image by 90 degrees (clockwise)
-    rotated_image = raw_image.rotate(90)
+    processed = raw_image.transpose(Image.FLIP_LEFT_RIGHT)
 
     # Save the rotated image as "processed.jpg"
-    rotated_image.save("images/processed.jpg")
+    processed.save("images/processed.jpg")
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])    
 def camera():
     if request.method == 'POST' and request.form.get("photo") != None:
         base64_string = request.form.get("photo")

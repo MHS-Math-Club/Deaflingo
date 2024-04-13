@@ -2,6 +2,7 @@
 <html lang="en">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/mainpage.css') }}">
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
@@ -13,104 +14,6 @@
             integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
             crossorigin="anonymous"></script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-        }
-        .title {
-            /*background-color: white;*/
-            flex-grow: .75;
-            padding: 20px;
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        .logo {
-            width: 250px; /* You can adjust the width as per your requirement */
-            height: auto; /* This will maintain the aspect ratio */
-            position: absolute;
-            left: 20%; /* 1/4 of the page width */
-            top: 1.25%; /* Align to the top of the page */
-        }
-
-        .wordcontainer {
-            flex-grow: .75;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /*background-color: #e0e0e0;*/
-        }
-
-        .word {
-            font-size: 5em;
-            font-family: 'Roboto Mono', monospace; /* Roboto Mono font */
-            flex-grow: .75;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: green;
-        }
-
-        .underline {
-            text-decoration: underline;
-            color: black;
-            margin-right: 0.2em; /* add space between letters */
-        }
-
-        .underline.green {
-            color: rgb(88, 204, 2);
-        }
-
-
-        .view {
-            /*background-color: #e0e0e0;*/
-            display: flex;
-            flex-grow: 2.5; /* Made it larger */
-        }
-
-        .green_monkey .move-area {
-            background-color: #e0e0e0;
-            display: flex;
-            flex-grow: 2.5; /* Made it larger */
-            max-width: 400px; /* Adjust the width as needed */
-            max-height: 300px; /* Adjust the height as needed */
-            background: url('greenmonkey.png') no-repeat center center;
-            background-size: contain; /* Ensures the image is fully contained */
-            position: relative;
-        }
-
-
-        .camera,
-        .answer {
-            flex: 1;
-            padding: 20px;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .title {
-            border-bottom: 1px solid rgb(195, 195, 195);
-        }
-        #photoElement {
-            border-radius: 30px;
-            border: 5px solid #b6b6b6;
-        }
-
-        .footer {
-            /*background-color: #cccccc;*/
-            padding: 10px;
-        }
-        
-        #predictedCharacter {
-                font-size: 20em; /* Adjust the font size as needed */
-        }
-    </style>
 </head>
 <body>
 
@@ -119,7 +22,7 @@
 </div>
 
 
-<div id="predictedCharacter"></div>
+<!-- <div id="predictedCharacter"></div> -->
 
 <div class="wordcontainer">
     <div class="word">
@@ -144,115 +47,10 @@
             <input id="imageString" type="hidden" name="photo"/>
         </form>
 
-        <script>
-            const videoElement = document.getElementById('videoElement');
-            const canvasElement = document.getElementById('canvasElement');
-            const photoElement = document.getElementById('photoElement');
-        
-            let stream;
-        
-            async function startWebcam() {
-                try {
-                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    videoElement.srcObject = stream;
-                    capturePhoto(); // Automatically capture photo on page load
-                } catch (error) {
-                    console.error('Error accessing webcam:', error);
-                }
-            }
-        
-            function capturePhoto() {
-                canvasElement.width = videoElement.videoWidth;
-                canvasElement.height = videoElement.videoHeight;
-                canvasElement.getContext('2d').drawImage(videoElement, 0, 0);
-                const photoDataUrl = canvasElement.toDataURL('image/jpeg');
-                photoElement.src = photoDataUrl;
-                photoElement.style.display = 'block';
-        
-                const base64String = photoDataUrl.split(',')[1];
-        
-                // Set base64 string in the form input field
-                document.getElementById("imageString").value = base64String;
-        
-                // AJAX form submission
-                $.ajax({
-                    type: 'POST',
-                    url: '/',
-                    data: $('#sendImage').serialize(), // Serialize form data
-                });
-        
-                photoElement.src = 'images/processed.jpg?' + new Date().getTime() + 10; // Adding timestamp to force image reload
-                
-                // Assuming you have an element with the id 'predictedCharacter' where you want to display the predicted character
-                const predictedCharacterElement = document.getElementById('predictedCharacter');
-
-                fetch('/json/output.json')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Get the value of predicted_character
-                        const predictedCharacter = data.predicted_character;
-
-                        // Update the content of the element with the predicted character
-                        predictedCharacterElement.textContent = predictedCharacter;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching JSON:', error);
-                    });
-
-                                // Capture photo repeatedly
-                setTimeout(capturePhoto, 50);  // we can make this less slow but too fast = problems
-            }
-        
-            // Start webcam when the page loads
-            startWebcam();
-        </script>
+        <script src="{{url_for('static', filename='scripts/camera.js')}}"></script>
         <!-- End of Camera Stuff -->
     </div>
     <div class="answer">
-        <style>
-            .green_monkey_move-area {
-              width: 400px; /* Adjust the width as needed */
-              height: 300px; /* Adjust the height as needed */
-              background: url('../images/greenmonkey.png') no-repeat center center;
-              background-size: contain; /* Ensures the image is fully contained */
-              position: relative;
-            }
-            
-            .green_monkey_container {
-              position: absolute;
-              top: 32%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-            }
-            
-            .green_monkey_eye {
-              position: relative;
-              display: inline-block;
-              border-radius: 50%;
-              height: 35px; /* Adjust the eye size as needed */
-              width: 35px; /* Adjust the eye size as needed */
-              
-            }
-            
-            .green_monkey_eye:after {
-              position: absolute;
-              bottom: 7px; /* Adjust the position of the eye as needed */
-              right: 4px; /* Adjust the position of the eye as needed */
-              width: 20px; /* Adjust the eye size as needed */
-              height: 20px; /* Adjust the eye size as needed */
-              background: #515152ff;
-              border-radius: 50%;
-              content: " ";
-            }
-            </style>
-            </head>
-            <body>
-            
             <section class="green_monkey_move-area">
               <div class='green_monkey_container'>
                 <div class='green_monkey_eye'></div>
@@ -261,23 +59,7 @@
             </section>
             
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script>
-            $(document).ready(function() {
-              $(".green_monkey_move-area").mousemove(function(event) {
-                var eye = $(".green_monkey_eye");
-                var x = (eye.offset().left) + (eye.width() / 2);
-                var y = (eye.offset().top) + (eye.height() / 2);
-                var rad = Math.atan2(event.pageX - x, event.pageY - y);
-                var rot = (rad * (180 / Math.PI) * -1) + 90;
-                eye.css({
-                  '-webkit-transform': 'rotate(' + rot + 'deg)',
-                  '-moz-transform': 'rotate(' + rot + 'deg)',
-                  '-ms-transform': 'rotate(' + rot + 'deg)',
-                  'transform': 'rotate(' + rot + 'deg)'
-                });
-              });
-            });
-            </script>
+            <script src="{{url_for('static', filename='scripts/monkeyeyes.js')}}"></script>
             
 
     </div>
@@ -287,22 +69,7 @@
     <h2>Footer</h2>
 </div>
 
-<script>
-    let blueLettersCount = 0;
-
-    document.addEventListener('keydown', function(event) {
-        // Check if the '+' key is pressed
-        if (event.keyCode === 187 || event.keyCode === 107) { // Check for both '+' and '=' keycodes
-            // Make another letter Blue
-            const wordLetters = document.querySelectorAll('.underline');
-            
-            if (blueLettersCount < wordLetters.length) {
-                wordLetters[blueLettersCount].classList.add('green');
-                blueLettersCount++;
-            }
-        }
-    });
-</script>
+<script src="{{url_for('static', filename='scripts/turngreen.js')}}"></script>
 
 </body>
 </html>

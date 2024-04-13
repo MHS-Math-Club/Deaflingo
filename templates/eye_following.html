@@ -5,32 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moveable Eyes</title>
 <style>
-.move-area {
-  width: 100vw;
-  height: 100vh;
-  padding: 10% 45%;
+.green_monkey_move-area {
+  width: 400px; /* Adjust the width as needed */
+  height: 300px; /* Adjust the height as needed */
+  background: url('greenmonkey.png') no-repeat center center;
+  background-size: contain; /* Ensures the image is fully contained */
+  position: relative;
 }
 
-.container {
-  width: 100%;
+.green_monkey_container {
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.eye {
+.green_monkey_eye {
   position: relative;
   display: inline-block;
   border-radius: 50%;
-  height: 30px;
-  width: 30px;
-  background: #CCC;
+  height: 35px; /* Adjust the eye size as needed */
+  width: 35px; /* Adjust the eye size as needed */
+  
 }
 
-.eye:after {
+.green_monkey_eye:after {
   position: absolute;
-  bottom: 17px;
-  right: 10px;
-  width: 10px;
-  height: 10px;
-  background: #000;
+  bottom: 7px; /* Adjust the position of the eye as needed */
+  right: 4px; /* Adjust the position of the eye as needed */
+  width: 20px; /* Adjust the eye size as needed */
+  height: 20px; /* Adjust the eye size as needed */
+  background: #515152ff;
   border-radius: 50%;
   content: " ";
 }
@@ -38,22 +43,22 @@
 </head>
 <body>
 
-<section class="move-area">
-  <div class='container'>
-    <div class='eye'></div>
-    <div class='eye'></div>
+<section class="green_monkey_move-area">
+  <div class='green_monkey_container'>
+    <div class='green_monkey_eye'></div>
+    <div class='green_monkey_eye'></div>
   </div>
 </section>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-  $(".move-area").mousemove(function(event) {
-    var eye = $(".eye");
+  $(".green_monkey_move-area").mousemove(function(event) {
+    var eye = $(".green_monkey_eye");
     var x = (eye.offset().left) + (eye.width() / 2);
     var y = (eye.offset().top) + (eye.height() / 2);
     var rad = Math.atan2(event.pageX - x, event.pageY - y);
-    var rot = (rad * (180 / Math.PI) * -1) + 180;
+    var rot = (rad * (180 / Math.PI) * -1) + 90;
     eye.css({
       '-webkit-transform': 'rotate(' + rot + 'deg)',
       '-moz-transform': 'rotate(' + rot + 'deg)',
@@ -66,3 +71,4 @@ $(document).ready(function() {
 
 </body>
 </html>
+

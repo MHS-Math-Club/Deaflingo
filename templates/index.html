@@ -19,6 +19,10 @@
         text-align: center;
         font-family: Arial, sans-serif;
     }
+    .logo {
+        width: 400px; /* You can adjust the width as per your requirement */
+        height: auto; /* This will maintain the aspect ratio */
+    }
 
     .wordcontainer {
         flex-grow: .75;
@@ -61,7 +65,7 @@
 <body>
 
 <div class="title">
-    <h1>Deaflingo</h1>
+    <img src="../images/Deaflingo_text.png" alt="Deaflingo Logo" class="logo">
 </div>
 
 <div class="wordcontainer">
@@ -85,6 +89,16 @@
 <div class="footer">
     <h2>Footer</h2>
 </div>
+
+<script>
+    document.addEventListener('keydown', function(event) {
+        // Check if the 'R' key is pressed
+        if (event.keyCode === 82) {
+            // Reload the webpage
+            location.reload();
+        }
+    });
+</script>
 
 </body>
 </html>

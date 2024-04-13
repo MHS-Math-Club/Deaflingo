@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,15 +14,17 @@
             crossorigin="anonymous"></script>
             
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            background-color: white;
         }
         .title {
-            background-color: #e0e0e0;
+            /*background-color: white;*/
             padding: 20px;
             text-align: center;
             font-family: Arial, sans-serif;
@@ -34,16 +39,23 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f5f5f5;
+            /*background-color: #e0e0e0;*/
         }
 
         .word {
             font-size: 5em;
+            font-family: 'Roboto Mono', monospace; /* Roboto Mono font */
+            flex-grow: .75;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: green;
         }
 
         .underline {
             text-decoration: underline;
             color: black;
+            margin-right: 0.2em; /* add space between letters */
         }
 
         .underline.green {
@@ -52,7 +64,7 @@
 
 
         .view {
-            background-color: #e0e0e0;
+            /*background-color: #e0e0e0;*/
             display: flex;
             flex-grow: 2.5; /* Made it larger */
         }
@@ -66,9 +78,13 @@
             justify-content: center;
             align-items: center;
         }
+        #photoElement {
+            border-radius: 30px;
+            border: 5px solid #b6b6b6;
+        }
 
         .footer {
-            background-color: #cccccc;
+            /*background-color: #cccccc;*/
             padding: 10px;
         }
     </style>
@@ -81,10 +97,10 @@
 
 <div class="wordcontainer">
     <div class="word">
-        <span class="underline">W</span>
-        <span class="underline">O</span>
-        <span class="underline">R</span>
-        <span class="underline">D</span>
+        <span class="underline">w</span>
+        <span class="underline">o</span>
+        <span class="underline">r</span>
+        <span class="underline">d</span>
     </div>
 </div>
 

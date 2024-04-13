@@ -18,7 +18,7 @@ def camera():
         color_image_flag = 1
         img = cv2.imdecode(data, color_image_flag)
 
-        cv2.imwrite("image.jpg", img)
+        cv2.imwrite("raw.jpg", img)
 
         return render_template('camera.html')
     else:

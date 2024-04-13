@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory, make_response
 import numpy as np
 from PIL import Image, ImageEnhance
 import cv2
@@ -80,7 +80,7 @@ def update():
         predicted_character = labels_dict[int(prediction[0])]
 
         data = {"predicted_character": predicted_character}
-        with open('output.json', 'w') as json_file:
+        with open('json/output.json', 'w') as json_file:
             json.dump(data, json_file)
 
         cv2.rectangle(frame_bgr, (x1, y1), (x2, y2), (0, 0, 0), 4)
@@ -117,6 +117,14 @@ def camera():
 @app.route('/images/<path:path>')
 def static_proxy(path):
     return send_from_directory('images', path)
+
+@app.route('/json/<path:path>')
+def send_json(path):
+    response = make_response(send_from_directory('json', path))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
     
 if __name__ == "__main__":
    app.run(debug=True, port=8001)

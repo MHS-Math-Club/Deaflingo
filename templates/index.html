@@ -172,16 +172,25 @@
                     type: 'POST',
                     url: '/',
                     data: $('#sendImage').serialize(), // Serialize form data
-                    success: function() {
-                        // Do nothing on success
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                    }
                 });
         
                 photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
                 
+                fetch('/json/output.json')
+                    .then(response => {
+                        if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Get the value of predicted_character
+                        const predictedCharacter = data.predicted_character
+                    })
+                    .catch(error => {
+                        console.error('Error fetching JSON:', error);
+                    });
+
                 // Capture photo repeatedly
                 setTimeout(capturePhoto, 100);  // we can make this less slow but too fast = problems
             }

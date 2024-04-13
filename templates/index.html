@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Four Divs Layout</title>
+    <title>Deaflingo</title>
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"
@@ -90,7 +90,6 @@
             flex: 1;
             padding: 20px;
             text-align: center;
-            align: center;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -173,18 +172,27 @@
                     type: 'POST',
                     url: '/',
                     data: $('#sendImage').serialize(), // Serialize form data
-                    success: function() {
-                        // Do nothing on success
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                    }
                 });
         
                 photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
                 
+                fetch('/json/output.json')
+                    .then(response => {
+                        if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Get the value of predicted_character
+                        const predictedCharacter = data.predicted_character
+                    })
+                    .catch(error => {
+                        console.error('Error fetching JSON:', error);
+                    });
+
                 // Capture photo repeatedly
-                setTimeout(capturePhoto, 33); // Capture photo every 1 second
+                setTimeout(capturePhoto, 50);  // we can make this less slow but too fast = problems
             }
         
             // Start webcam when the page loads

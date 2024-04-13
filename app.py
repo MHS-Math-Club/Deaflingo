@@ -6,6 +6,7 @@ import io
 import base64
 import pickle
 import mediapipe as mp
+import json
 
 app=Flask(__name__)
 
@@ -77,6 +78,10 @@ def update():
         prediction = model.predict([np.asarray(data_aux)])
 
         predicted_character = labels_dict[int(prediction[0])]
+
+        data = {"predicted_character": predicted_character}
+        with open('output.json', 'w') as json_file:
+            json.dump(data, json_file)
 
         cv2.rectangle(frame_bgr, (x1, y1), (x2, y2), (0, 0, 0), 4)
         cv2.putText(frame_bgr, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3,

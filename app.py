@@ -50,9 +50,9 @@ def camera():
 
         update()
 
-        return render_template('camera.html')
+        return render_template('index.html')
     else:
-        return render_template('camera.html')
+        return render_template('index.html')
     
 @app.route('/images/<path:path>')
 def static_proxy(path):

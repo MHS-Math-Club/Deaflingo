@@ -83,10 +83,6 @@ def update():
         with open('json/output.json', 'w') as json_file:
             json.dump(data, json_file)
 
-        cv2.rectangle(frame_bgr, (x1, y1), (x2, y2), (0, 0, 0), 4)
-        cv2.putText(frame_bgr, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3,
-                    cv2.LINE_AA)
-
     # Convert numpy array back to PIL image
     processed_with_text = Image.fromarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB))
     

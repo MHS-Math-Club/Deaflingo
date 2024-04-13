@@ -15,11 +15,23 @@ def update():
         print("Error: The file 'raw.jpg' was not found.")
         return
     
-    # Make the raw image upside down
-    processed = raw_image.transpose(Image.FLIP_TOP_BOTTOM)
-
-    # Save the processed image as "processed.jpg"
-    processed.save("images/processed.jpg")
+    # Convert PIL image to numpy array
+    raw_np = cv2.cvtColor(np.array(raw_image), cv2.COLOR_RGB2BGR)
+    
+    # Add text to the image
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    text = "Processed"
+    org = (50, 50)  # Coordinates to place the text
+    font_scale = 1
+    color = (0, 255, 0)  # Green color in BGR format
+    thickness = 2
+    cv2.putText(raw_np, text, org, font, font_scale, color, thickness, cv2.LINE_AA)
+    
+    # Convert numpy array back to PIL image
+    processed_with_text = Image.fromarray(cv2.cvtColor(raw_np, cv2.COLOR_BGR2RGB))
+    
+    # Save the processed image with text as "processed.jpg"
+    processed_with_text.save("images/processed.jpg")
 
 
 @app.route('/', methods=['GET', 'POST'])    

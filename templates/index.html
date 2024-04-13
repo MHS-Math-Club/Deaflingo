@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Four Divs Layout</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    .title {
+        background-color: #e0e0e0;
+        padding: 20px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+    .logo {
+        width: 400px; /* You can adjust the width as per your requirement */
+        height: auto; /* This will maintain the aspect ratio */
+    }
+
+    .wordcontainer {
+        flex-grow: .75;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f5f5f5;
+    }
+
+    .word {
+        font-size: 5em;
+    }
+
+    .underline {
+        text-decoration: underline;
+        color: black;
+    }
+
+    .underline.green {
+        color: rgb(88, 204, 2);
+    }
+
+
+    .view {
+        background-color: #e0e0e0;
+        display: flex;
+        flex-grow: 2.5; /* Made it larger */
+    }
+
+    .camera,
+    .answer {
+        flex: 1;
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .footer {
+        background-color: #cccccc;
+        padding: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="title">
+    <img src="../images/Deaflingo_text.png" alt="Deaflingo Logo" class="logo">
+</div>
+
+<div class="wordcontainer">
+    <div class="word">
+        <span class="underline">W</span>
+        <span class="underline">O</span>
+        <span class="underline">R</span>
+        <span class="underline">D</span>
+    </div>
+</div>
+
+<div class="view">
+    <div class="camera">
+        <h1>Camera</h1>
+    </div>
+    <div class="answer">
+        <h1>Answer</h1>
+    </div>
+</div>
+
+<div class="footer">
+    <h2>Footer</h2>
+</div>
+
+<script>
+    let blueLettersCount = 0;
+
+    document.addEventListener('keydown', function(event) {
+        // Check if the '+' key is pressed
+        if (event.keyCode === 187 || event.keyCode === 107) { // Check for both '+' and '=' keycodes
+            // Make another letter Blue
+            const wordLetters = document.querySelectorAll('.underline');
+            
+            if (blueLettersCount < wordLetters.length) {
+                wordLetters[blueLettersCount].classList.add('green');
+                blueLettersCount++;
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

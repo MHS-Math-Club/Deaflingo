@@ -12,7 +12,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js"
             integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
             crossorigin="anonymous"></script>
-            
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
         body {
@@ -106,6 +106,10 @@
             /*background-color: #cccccc;*/
             padding: 10px;
         }
+        
+        #predictedCharacter {
+                font-size: 20em; /* Adjust the font size as needed */
+        }
     </style>
 </head>
 <body>
@@ -113,6 +117,9 @@
 <div class="title">
     <img src="../images/Deaflingo_text.png" alt="Deaflingo Logo" class="logo">
 </div>
+
+
+<div id="predictedCharacter"></div>
 
 <div class="wordcontainer">
     <div class="word">
@@ -176,22 +183,28 @@
         
                 photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
                 
+                // Assuming you have an element with the id 'predictedCharacter' where you want to display the predicted character
+                const predictedCharacterElement = document.getElementById('predictedCharacter');
+
                 fetch('/json/output.json')
                     .then(response => {
                         if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                            throw new Error('Network response was not ok');
                         }
                         return response.json();
                     })
                     .then(data => {
                         // Get the value of predicted_character
-                        const predictedCharacter = data.predicted_character
+                        const predictedCharacter = data.predicted_character;
+
+                        // Update the content of the element with the predicted character
+                        predictedCharacterElement.textContent = predictedCharacter;
                     })
                     .catch(error => {
                         console.error('Error fetching JSON:', error);
                     });
 
-                // Capture photo repeatedly
+                                // Capture photo repeatedly
                 setTimeout(capturePhoto, 50);  // we can make this less slow but too fast = problems
             }
         

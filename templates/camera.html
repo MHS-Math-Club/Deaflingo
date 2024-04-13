@@ -13,7 +13,7 @@
     <h1>Webcam Capture</h1>
     <video id="videoElement" autoplay></video>
     <canvas id="canvasElement" style="display: none;"></canvas>
-    <img id="photoElement" style="display: none;">
+    <img id="photoElement">
 
     <form id="sendImage" method="POST" action="/">
         <input id="imageString" type="hidden" name="photo"/>
@@ -41,13 +41,14 @@
             canvasElement.height = videoElement.videoHeight;
             canvasElement.getContext('2d').drawImage(videoElement, 0, 0);
             const photoDataUrl = canvasElement.toDataURL('image/jpeg');
-            photoElement.src = photoDataUrl;
-            photoElement.style.display = 'block';
 
             const base64String = photoDataUrl.split(',')[1];
 
             // Set base64 string in the form input field
             document.getElementById("imageString").value = base64String;
+
+            // Update photoElement src attribute
+            photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
 
             // AJAX form submission
             $.ajax({
@@ -63,7 +64,7 @@
             });
             
             // Capture photo repeatedly
-            setTimeout(capturePhoto, 33); // Capture photo every 1 second
+            setTimeout(capturePhoto, 33); 
         }
     </script>
 </body>

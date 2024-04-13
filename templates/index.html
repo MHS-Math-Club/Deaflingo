@@ -181,7 +181,7 @@
                     data: $('#sendImage').serialize(), // Serialize form data
                 });
         
-                photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
+                photoElement.src = 'images/processed.jpg?' + new Date().getTime() + 10; // Adding timestamp to force image reload
                 
                 // Assuming you have an element with the id 'predictedCharacter' where you want to display the predicted character
                 const predictedCharacterElement = document.getElementById('predictedCharacter');

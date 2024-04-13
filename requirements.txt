@@ -1,5 +1,2 @@
-Flask
-numpy
-Pillow
+flask
 opencv-python
-mediapipe

@@ -1,66 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Four Divs Layout</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Four Divs Layout</title>
 
-<style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-    }
-    .title {
-        background-color: #e0e0e0;
-        padding: 20px;
-        text-align: center;
-        font-family: Arial, sans-serif;
-    }
-    .logo {
-        width: 400px; /* You can adjust the width as per your requirement */
-        height: auto; /* This will maintain the aspect ratio */
-    }
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+            crossorigin="anonymous"></script>
+            
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .title {
+            background-color: #e0e0e0;
+            padding: 20px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .logo {
+            width: 400px; /* You can adjust the width as per your requirement */
+            height: auto; /* This will maintain the aspect ratio */
+        }
 
-    .wordcontainer {
-        flex-grow: .75;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #f5f5f5;
-    }
+        .wordcontainer {
+            flex-grow: .75;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
 
-    .word {
-        font-size: 5em;
-    }
+        .word {
+            font-size: 5em;
+        }
 
-    .underline {
-        text-decoration: underline;
-    }
+        .underline {
+            text-decoration: underline;
+            color: black;
+        }
 
-    .view {
-        background-color: #e0e0e0;
-        display: flex;
-        flex-grow: 2.5; /* Made it larger */
-    }
+        .underline.green {
+            color: rgb(88, 204, 2);
+        }
 
-    .camera,
-    .answer {
-        flex: 1;
-        padding: 20px;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
 
-    .footer {
-        background-color: #cccccc;
-        padding: 10px;
-    }
-</style>
+        .view {
+            background-color: #e0e0e0;
+            display: flex;
+            flex-grow: 2.5; /* Made it larger */
+        }
+
+        .camera,
+        .answer {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .footer {
+            background-color: #cccccc;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -79,7 +90,71 @@
 
 <div class="view">
     <div class="camera">
-        <h1>Camera</h1>
+        <!-- Camera Stuff Goes Here -->
+        <img id="photoElement">
+        <div style="display: none;">
+            <video id="videoElement" autoplay></video>
+        </div>    
+        <canvas id="canvasElement" style="display: none;"></canvas>
+
+
+        <form id="sendImage" method="POST" action="/">
+            <input id="imageString" type="hidden" name="photo"/>
+        </form>
+
+        <script>
+            const videoElement = document.getElementById('videoElement');
+            const canvasElement = document.getElementById('canvasElement');
+            const photoElement = document.getElementById('photoElement');
+        
+            let stream;
+        
+            async function startWebcam() {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    videoElement.srcObject = stream;
+                    capturePhoto(); // Automatically capture photo on page load
+                } catch (error) {
+                    console.error('Error accessing webcam:', error);
+                }
+            }
+        
+            function capturePhoto() {
+                canvasElement.width = videoElement.videoWidth;
+                canvasElement.height = videoElement.videoHeight;
+                canvasElement.getContext('2d').drawImage(videoElement, 0, 0);
+                const photoDataUrl = canvasElement.toDataURL('image/jpeg');
+                photoElement.src = photoDataUrl;
+                photoElement.style.display = 'block';
+        
+                const base64String = photoDataUrl.split(',')[1];
+        
+                // Set base64 string in the form input field
+                document.getElementById("imageString").value = base64String;
+        
+                // AJAX form submission
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: $('#sendImage').serialize(), // Serialize form data
+                    success: function() {
+                        // Do nothing on success
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+        
+                photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
+                
+                // Capture photo repeatedly
+                setTimeout(capturePhoto, 33); // Capture photo every 1 second
+            }
+        
+            // Start webcam when the page loads
+            startWebcam();
+        </script>
+        <!-- End of Camera Stuff -->
     </div>
     <div class="answer">
         <h1>Answer</h1>
@@ -91,11 +166,18 @@
 </div>
 
 <script>
+    let blueLettersCount = 0;
+
     document.addEventListener('keydown', function(event) {
-        // Check if the 'R' key is pressed
-        if (event.keyCode === 82) {
-            // Reload the webpage
-            location.reload();
+        // Check if the '+' key is pressed
+        if (event.keyCode === 187 || event.keyCode === 107) { // Check for both '+' and '=' keycodes
+            // Make another letter Blue
+            const wordLetters = document.querySelectorAll('.underline');
+            
+            if (blueLettersCount < wordLetters.length) {
+                wordLetters[blueLettersCount].classList.add('green');
+                blueLettersCount++;
+            }
         }
     });
 </script>

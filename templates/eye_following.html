@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moveable Eyes</title>
+<style>
+.green_monkey_move-area {
+  width: 400px; /* Adjust the width as needed */
+  height: 300px; /* Adjust the height as needed */
+  background: url('greenmonkey.png') no-repeat center center;
+  background-size: contain; /* Ensures the image is fully contained */
+  position: relative;
+}
+
+.green_monkey_container {
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.green_monkey_eye {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  height: 35px; /* Adjust the eye size as needed */
+  width: 35px; /* Adjust the eye size as needed */
+  
+}
+
+.green_monkey_eye:after {
+  position: absolute;
+  bottom: 7px; /* Adjust the position of the eye as needed */
+  right: 4px; /* Adjust the position of the eye as needed */
+  width: 20px; /* Adjust the eye size as needed */
+  height: 20px; /* Adjust the eye size as needed */
+  background: #515152ff;
+  border-radius: 50%;
+  content: " ";
+}
+</style>
+</head>
+<body>
+
+<section class="green_monkey_move-area">
+  <div class='green_monkey_container'>
+    <div class='green_monkey_eye'></div>
+    <div class='green_monkey_eye'></div>
+  </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  $(".green_monkey_move-area").mousemove(function(event) {
+    var eye = $(".green_monkey_eye");
+    var x = (eye.offset().left) + (eye.width() / 2);
+    var y = (eye.offset().top) + (eye.height() / 2);
+    var rad = Math.atan2(event.pageX - x, event.pageY - y);
+    var rot = (rad * (180 / Math.PI) * -1) + 90;
+    eye.css({
+      '-webkit-transform': 'rotate(' + rot + 'deg)',
+      '-moz-transform': 'rotate(' + rot + 'deg)',
+      '-ms-transform': 'rotate(' + rot + 'deg)',
+      'transform': 'rotate(' + rot + 'deg)'
+    });
+  });
+});
+</script>
+
+</body>
+</html>
+

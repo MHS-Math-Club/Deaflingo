@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageEnhance
 import cv2
 import io
 import base64
@@ -14,12 +14,13 @@ def update():
     except FileNotFoundError:
         print("Error: The file 'raw.jpg' was not found.")
         return
+    
+    # Make the raw image upside down
+    processed = raw_image.transpose(Image.FLIP_TOP_BOTTOM)
 
-    # Rotate the image by 90 degrees (clockwise)
-    processed = raw_image.transpose(Image.FLIP_LEFT_RIGHT)
-
-    # Save the rotated image as "processed.jpg"
+    # Save the processed image as "processed.jpg"
     processed.save("images/processed.jpg")
+
 
 @app.route('/', methods=['GET', 'POST'])    
 def camera():

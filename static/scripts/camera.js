@@ -3,7 +3,7 @@ const videoElement = document.getElementById('videoElement');
     const photoElement = document.getElementById('photoElement');
     let currentLetterIndex = 0; // To keep track of the letter being typed
     let holdTimer = null; // Timer for holding the same letter
-    const holdDuration = 500; // Duration in milliseconds for holding the same letter
+    const holdDuration = 300; // Duration in milliseconds for holding the same letter
 
     let stream;
 
@@ -86,7 +86,7 @@ const videoElement = document.getElementById('videoElement');
             });
 
         // Capture photo repeatedly
-        setTimeout(updateStream, 100); // we can make this less slow but too fast = problems
+        setTimeout(updateStream, 50); // we can make this less slow but too fast = problems
     }
 
     // Start webcam when the page loads

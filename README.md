@@ -4,7 +4,7 @@ Welcome to Deaflingo! This guide will walk you through the steps to set up and r
 
 ## Prerequisites
 
-- Python 3.11.7 installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
+- Python 3.11.x installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
 
 ## Setup Instructions
 

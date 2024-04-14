@@ -75,12 +75,10 @@ body {
 }
 
 .green_monkey_move-area .card .front {
-    background: url('../../images/greenmonkey.png') no-repeat center center;
     background-size: contain;
 }
 
 .green_monkey_move-area .card .back {
-    background: url('../../images/hand.jpg') no-repeat center center;
     background-size: contain;
     transform: rotateY(180deg);
 }
@@ -160,6 +158,20 @@ body {
     background-size: contain; /* Ensures the image is fully contained */
     position: relative;
 }
+
+.green_monkey_letter {
+    font-size: 64px; /* Adjust the size as needed */
+    flex-grow: 2.5;
+    font-family: 'Roboto Mono', monospace;
+    
+}
+
+.green_monkey_ponder_container {
+    position: absolute;
+    top: 24%;
+    left: 23%;
+}
+
 
 .green_monkey_container {
     position: absolute;

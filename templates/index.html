@@ -3,134 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <title>Deaflingo</title>
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"
             integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
             crossorigin="anonymous"></script>
-            
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-        }
-        .title {
-            flex-grow: .75;
-            padding: 20px;
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        .logo {
-            width: 400px;
-            height: auto;
-        }
-
-        .wordcontainer {
-            flex-grow: .75;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .word {
-            font-size: 5em;
-            font-family: 'Roboto Mono', monospace;
-            flex-grow: .75;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .underline {
-            color: black;
-            margin-right: 0.2em;
-        }
-
-        .cursor {
-            color: black;
-            animation: blink-animation 1s infinite;
-        }
-
-        @keyframes blink-animation {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        .view {
-            display: flex;
-            flex-grow: 2.5;
-        }
-
-        .green_monkey_move-area .card {
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        
-        .green_monkey_move-area .card.flip {
-            transform: rotateX(180deg);
-        }
-        
-        .green_monkey_move-area .card .face {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            backface-visibility: hidden;
-            background-size: contain;
-        }
-        
-        .green_monkey_move-area .card .front {
-            background: url('../images/greenmonkey.png') no-repeat center center;
-            background-size: contain;
-        }
-        
-        .green_monkey_move-area .card .back {
-            background: url('../images/hand.jpg') no-repeat center center;
-            background-size: contain;
-            transform: rotateY(180deg);
-        }
-
-        .camera,
-        .answer {
-            flex: 1;
-            padding: 20px;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .header {
-            position: absolute;
-            top: 40px;
-            right: 20px;
-            background-color: #cdde87ff;
-            padding: 10px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: fit-content;
-        }
-        
-
-        #photoElement {
-            border-radius: 30px;
-            border: 5px solid #b6b6b6;
-        }
-
-        .footer {
-            padding: 10px;
-        }
-    </style>
 </head>
 <body>
 
@@ -171,184 +50,13 @@
         <form id="sendImage" method="POST" action="/">
             <input id="imageString" type="hidden" name="photo"/>
         </form>
-
-<script>
-    const videoElement = document.getElementById('videoElement');
-    const canvasElement = document.getElementById('canvasElement');
-    const photoElement = document.getElementById('photoElement');
-    let currentLetterIndex = 0; // To keep track of the letter being typed
-    let holdTimer = null; // Timer for holding the same letter
-    const holdDuration = 500; // Duration in milliseconds for holding the same letter
-
-    let stream;
-
-    async function startWebcam() {
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            videoElement.srcObject = stream;
-            updateStream(); // Automatically capture photo on page load
-        } catch (error) {
-            console.error('Error accessing webcam:', error);
-        }
-    }
-
-    function updateStream() {
-        canvasElement.width = videoElement.videoWidth;
-        canvasElement.height = videoElement.videoHeight;
-        canvasElement.getContext('2d').drawImage(videoElement, 0, 0);
-        const photoDataUrl = canvasElement.toDataURL('image/jpeg');
-        photoElement.src = photoDataUrl;
-        photoElement.style.display = 'block';
-
-        const base64String = photoDataUrl.split(',')[1];
-
-        // Set base64 string in the form input field
-        document.getElementById("imageString").value = base64String;
-
-        // AJAX form submission
-        $.ajax({
-            type: 'POST',
-            url: '/',
-            data: $('#sendImage').serialize(), // Serialize form data
-        });
-
-        photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
-
-        const predictedCharacterElement = document.getElementById('predictedCharacter');
-
-        fetch('/json/output.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Get the value of predicted_character
-                const predictedCharacter = data.predicted_character.toLowerCase();
-
-                // Update the content of the element with the predicted character
-                predictedCharacterElement.textContent = predictedCharacter;
-
-                // Select all the spans in the quote
-                const wordSpans = document.querySelectorAll('.word span');
-
-                // Check if the current letter index is valid
-                if (currentLetterIndex < wordSpans.length) {
-                    // Get the current letter span
-                    const currentLetterSpan = wordSpans[currentLetterIndex];
-
-                    // Compare the current predicted character with the letter of the word
-                    if (predictedCharacter === currentLetterSpan.textContent.toLowerCase()) {
-                        // Start or reset the hold timer
-                        if (holdTimer === null) {
-                            holdTimer = setTimeout(() => {
-                                currentLetterSpan.style.color = 'green'; // Turn the letter green
-                                currentLetterSpan.style.textDecoration = 'underline'; // Add underline to the letter
-                                currentLetterIndex++; // Move to the next letter
-                                holdTimer = null; // Reset the timer
-                            }, holdDuration);
-                        }
-                    } else {
-                        // Reset the hold timer if the predicted character changes
-                        clearTimeout(holdTimer);
-                        holdTimer = null;
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching JSON:', error);
-            });
-
-        // Capture photo repeatedly
-        setTimeout(updateStream, 50); // we can make this less slow but too fast = problems
-    }
-
-    // Start webcam when the page loads
-    startWebcam();
-</script>
-        
-
+        <script src="{{url_for('static', filename='scripts/camera.js')}}"></script>
         <!-- End of Camera Stuff -->
     </div>
     <div class="answer">
         <div class="flip-card" onclick="flipCard(this)">
             <div class="flip-card-inner">
               <div class="flip-card-front">
-                <style>
-                    .flip-card {
-                        background-color: transparent;
-                        width: 600px;
-                        height: 430px;
-                        perspective: 1000px;
-                    }
-                    
-                    .flip-card-inner {
-                        position: relative;
-                        width: 100%;
-                        height: 100%;
-                        text-align: center;
-                        transition: transform 0.8s;
-                        transform-style: preserve-3d;
-                    }
-                    
-                    .flip-card.flipped .flip-card-inner {
-                        transform: rotateX(180deg);
-                    }
-                    
-                    .flip-card-front, .flip-card-back {
-                        position: absolute;
-                        width: 100%;
-                        height: 100%;
-                        -webkit-backface-visibility: hidden; /* Safari */
-                        backface-visibility: hidden;
-                    }
-                    
-                    .flip-card-front {
-                    }
-                    
-                    .flip-card-back {
-                        transform: rotateX(180deg);
-                    }
-                    
-                    
-                </style>
-                <style>
-                    .green_monkey_move-area {
-                      width: 600px; /* Adjust the width as needed */
-                      height: 450px; /* Adjust the height as needed */
-                      background: url('../images/flashcard_top.png') no-repeat center center;
-                      background-size: contain; /* Ensures the image is fully contained */
-                      position: relative;
-                    }
-                    
-                    .green_monkey_container {
-                      position: absolute;
-                      top: 54%;
-                      left: 73%;
-                      transform: translate(-50%, -50%);
-                    }
-                    
-                    .green_monkey_eye {
-                      position: relative;
-                      display: inline-block;
-                      border-radius: 50%;
-                      height: 40px; /* Adjust the eye size as needed */
-                      width: 29px; /* Adjust the eye size as needed */
-                      
-                    }
-                    
-                    .green_monkey_eye:after {
-                      position: absolute;
-                      bottom: 7px; /* Adjust the position of the eye as needed */
-                      right: 4px; /* Adjust the position of the eye as needed */
-                      width: 15px; /* Adjust the eye size as needed */
-                      height: 15px; /* Adjust the eye size as needed */
-                      background: #515152ff;
-                      border-radius: 50%;
-                      content: " ";
-                    }
-                    </style>
                     </head>
                     <body>
                     
@@ -361,62 +69,17 @@
                     <link>
                     
                     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                    <script>
-                    $(document).ready(function() {
-                      $(".green_monkey_move-area").mousemove(function(event) {
-                        var eye = $(".green_monkey_eye");
-                        var x = (eye.offset().left) + (eye.width() / 2);
-                        var y = (eye.offset().top) + (eye.height() / 2);
-                        var rad = Math.atan2(event.pageX - x, event.pageY - y);
-                        var rot = (rad * (180 / Math.PI) * -1) + 45;
-                        eye.css({
-                          '-webkit-transform': 'rotate(' + rot + 'deg)',
-                          '-moz-transform': 'rotate(' + rot + 'deg)',
-                          '-ms-transform': 'rotate(' + rot + 'deg)',
-                          'transform': 'rotate(' + rot + 'deg)'
-                        });
-                      });
-                    });
-                    </script>
+                    <script src="{{url_for('static', filename='scripts/monkeyeyes.js')}}"></script>
               </div>
               <div class="flip-card-back">
                 <img src="..\images\green_asl_abc\A.png" alt="Avatar" style="width:600px">
               </div>
             </div>
           </div>
-        <script>
-            function flipCard(card) {
-          card.classList.toggle("flipped");
-        }
-        
-        </script>
+        <script src="{{url_for('static', filename='scripts/flipcard.js')}}"></script>
     </div>
 </div>
 
-<style>
-    .wordcontainer .word div {
-        display: inline-block;
-        margin-right: 35px; /* Adjust the value to increase or decrease space */
-    }
-</style>
-
-<script>
-// List of random words
-const words = ['apple', 'banana', 'orange', 'grape', 'peach', 'kiwi', 'strawberry', 'blueberry', 'watermelon', 'pineapple', 'cherry', 'mango', 'pear', 'plum'];
-
-// Function to generate a random word
-function generateRandomWord() {
-    const randomIndex = Math.floor(Math.random() * words.length);
-    return words[randomIndex];
-}
-
-// Populate the word container with random words
-const wordContainer = document.querySelector('.wordcontainer .word');
-for (let i = 0; i < 3; i++) { // Populate 3 words
-    const word = generateRandomWord();
-    const spans = Array.from(word).map(letter => `<span>${letter}</span>`).join('');
-    wordContainer.innerHTML += `<div>${spans}</div>`;
-}
-</script>
+<script src="{{url_for('static', filename='scripts/generatewords.js')}}"></script>
 </body>
 </html>

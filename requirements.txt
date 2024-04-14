@@ -3,3 +3,4 @@ numpy==1.26.4
 pillow==10.3.0
 opencv-python==4.7.0.68
 mediapipe==0.10.1
+gunicorn==19.7.1

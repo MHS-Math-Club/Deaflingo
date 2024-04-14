@@ -172,178 +172,187 @@
             <input id="imageString" type="hidden" name="photo"/>
         </form>
 
-        <script>
-            const videoElement = document.getElementById('videoElement');
-            const canvasElement = document.getElementById('canvasElement');
-            const photoElement = document.getElementById('photoElement');
-            let currentLetterIndex = 0; // To keep track of the letter being typed
+<script>
+    const videoElement = document.getElementById('videoElement');
+    const canvasElement = document.getElementById('canvasElement');
+    const photoElement = document.getElementById('photoElement');
+    let currentLetterIndex = 0; // To keep track of the letter being typed
+    let holdTimer = null; // Timer for holding the same letter
+    const holdDuration = 500; // Duration in milliseconds for holding the same letter
 
-            let stream;
-        
-            async function startWebcam() {
-                try {
-                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    videoElement.srcObject = stream;
-                    capturePhoto(); // Automatically capture photo on page load
-                } catch (error) {
-                    console.error('Error accessing webcam:', error);
+    let stream;
+
+    async function startWebcam() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            videoElement.srcObject = stream;
+            updateStream(); // Automatically capture photo on page load
+        } catch (error) {
+            console.error('Error accessing webcam:', error);
+        }
+    }
+
+    function updateStream() {
+        canvasElement.width = videoElement.videoWidth;
+        canvasElement.height = videoElement.videoHeight;
+        canvasElement.getContext('2d').drawImage(videoElement, 0, 0);
+        const photoDataUrl = canvasElement.toDataURL('image/jpeg');
+        photoElement.src = photoDataUrl;
+        photoElement.style.display = 'block';
+
+        const base64String = photoDataUrl.split(',')[1];
+
+        // Set base64 string in the form input field
+        document.getElementById("imageString").value = base64String;
+
+        // AJAX form submission
+        $.ajax({
+            type: 'POST',
+            url: '/',
+            data: $('#sendImage').serialize(), // Serialize form data
+        });
+
+        photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
+
+        const predictedCharacterElement = document.getElementById('predictedCharacter');
+
+        fetch('/json/output.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
-            }
-        
-            function capturePhoto() {
-                canvasElement.width = videoElement.videoWidth;
-                canvasElement.height = videoElement.videoHeight;
-                canvasElement.getContext('2d').drawImage(videoElement, 0, 0);
-                const photoDataUrl = canvasElement.toDataURL('image/jpeg');
-                photoElement.src = photoDataUrl;
-                photoElement.style.display = 'block';
-        
-                const base64String = photoDataUrl.split(',')[1];
-        
-                // Set base64 string in the form input field
-                document.getElementById("imageString").value = base64String;
-        
-                // AJAX form submission
-                $.ajax({
-                    type: 'POST',
-                    url: '/',
-                    data: $('#sendImage').serialize(), // Serialize form data
-                });
-        
-                photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
+                return response.json();
+            })
+            .then(data => {
+                // Get the value of predicted_character
+                const predictedCharacter = data.predicted_character.toLowerCase();
 
-                const predictedCharacterElement = document.getElementById('predictedCharacter');
-                
-                fetch('/json/output.json')
-                    .then(response => {
-                        if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Get the value of predicted_character
-                        const predictedCharacter = data.predicted_character.toLowerCase();
+                // Update the content of the element with the predicted character
+                predictedCharacterElement.textContent = predictedCharacter;
 
-                        // Update the content of the element with the predicted character
-                        predictedCharacterElement.textContent = predictedCharacter;
+                // Select all the spans in the quote
+                const wordSpans = document.querySelectorAll('.word span');
 
-                        // Select all the spans in the quote
-                        const wordSpans = document.querySelectorAll('.word span');
+                // Check if the current letter index is valid
+                if (currentLetterIndex < wordSpans.length) {
+                    // Get the current letter span
+                    const currentLetterSpan = wordSpans[currentLetterIndex];
 
-                        // Check if the current letter index is valid
-                        if (currentLetterIndex < wordSpans.length) {
-                            // Get the current letter span
-                            const currentLetterSpan = wordSpans[currentLetterIndex];
-
-                            // Compare the current predicted character with the letter of the word
-                            if (predictedCharacter === currentLetterSpan.textContent.toLowerCase()) {
+                    // Compare the current predicted character with the letter of the word
+                    if (predictedCharacter === currentLetterSpan.textContent.toLowerCase()) {
+                        // Start or reset the hold timer
+                        if (holdTimer === null) {
+                            holdTimer = setTimeout(() => {
                                 currentLetterSpan.style.color = 'green'; // Turn the letter green
                                 currentLetterSpan.style.textDecoration = 'underline'; // Add underline to the letter
                                 currentLetterIndex++; // Move to the next letter
-                            }
+                                holdTimer = null; // Reset the timer
+                            }, holdDuration);
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching JSON:', error);
-                    });
+                    } else {
+                        // Reset the hold timer if the predicted character changes
+                        clearTimeout(holdTimer);
+                        holdTimer = null;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching JSON:', error);
+            });
 
-                // Capture photo repeatedly
-                setTimeout(capturePhoto, 50);  // we can make this less slow but too fast = problems
-            }
+        // Capture photo repeatedly
+        setTimeout(updateStream, 50); // we can make this less slow but too fast = problems
+    }
+
+    // Start webcam when the page loads
+    startWebcam();
+</script>
         
-            // Start webcam when the page loads
-            startWebcam();
-        </script>
+
         <!-- End of Camera Stuff -->
     </div>
     <div class="answer">
-        <style>
-            .green_monkey_move-area {
-              width: 400px;
-              height: 300px;
-              background: url('../images/greenmonkey.png') no-repeat center center;
-              background-size: contain;
-              position: relative;
-            }
-            
-            .green_monkey_container {
-              position: absolute;
-              top: 32%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-            }
-            
-            .green_monkey_eye {
-              position: relative;
-              display: inline-block;
-              border-radius: 50%;
-              height: 35px;
-              width: 35px;
-              
-            }
-            
-            .green_monkey_eye:after {
-              position: absolute;
-              bottom: 7px;
-              right: 4px;
-              width: 20px;
-              height: 20px;
-              background: #515152ff;
-              border-radius: 50%;
-              content: " ";
-            }
-            </style>
-            </head>
-            <body>
-            
-                <section class="green_monkey_move-area">
-                    <div class="card">
-                        <div class='green_monkey_container'>
-                            <div class='green_monkey_eye'></div>
-                            <div class='green_monkey_eye'></div>
-                        </div>
-                        <div class="face front"></div>
-                        <div class="face back"></div>
-                    </div>
-                </section>
-                
-            
-            <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-
-            <script>
-                $(document).ready(function() {
-                    $(".green_monkey_move-area").click(function() {
-                        // Check if the card is already flipped
-                        if ($(this).find('.card').hasClass('flip')) {
-                            // If already flipped, revert to original state
-                            $(this).find('.card').removeClass('flip');
-                        } else {
-                            // If not flipped, flip the card and hide other cards
-                            $('.green_monkey_move-area .card').removeClass('flip');
-                            $(this).find('.card').addClass('flip');
-                        }
-                    });
-
-                    $(".green_monkey_move-area").mousemove(function(event) {
-                        // Calculate the angle for the eye rotation based on mouse position
-                        var eye = $(this).find(".green_monkey_eye");
-                        var x = eye.offset().left + eye.width() / 2;
-                        var y = eye.offset().top + eye.height() / 2;
+        <div class="flip-card" onclick="flipCard(this)">
+            <link rel="stylesheet" type="text/css" href="flashcard.css">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <style>
+                    .green_monkey_move-area {
+                      width: 600px; /* Adjust the width as needed */
+                      height: 450px; /* Adjust the height as needed */
+                      background: url('../images/flashcard_top.png') no-repeat center center;
+                      background-size: contain; /* Ensures the image is fully contained */
+                      position: relative;
+                    }
+                    
+                    .green_monkey_container {
+                      position: absolute;
+                      top: 54%;
+                      left: 73%;
+                      transform: translate(-50%, -50%);
+                    }
+                    
+                    .green_monkey_eye {
+                      position: relative;
+                      display: inline-block;
+                      border-radius: 50%;
+                      height: 40px; /* Adjust the eye size as needed */
+                      width: 29px; /* Adjust the eye size as needed */
+                      
+                    }
+                    
+                    .green_monkey_eye:after {
+                      position: absolute;
+                      bottom: 7px; /* Adjust the position of the eye as needed */
+                      right: 4px; /* Adjust the position of the eye as needed */
+                      width: 15px; /* Adjust the eye size as needed */
+                      height: 15px; /* Adjust the eye size as needed */
+                      background: #515152ff;
+                      border-radius: 50%;
+                      content: " ";
+                    }
+                    </style>
+                    </head>
+                    <body>
+                    
+                    <section class="green_monkey_move-area">
+                      <div class='green_monkey_container'>
+                        <div class='green_monkey_eye'></div>
+                        <div class='green_monkey_eye'></div>
+                      </div>
+                    </section>
+                    <link>
+                    
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                    $(document).ready(function() {
+                      $(".green_monkey_move-area").mousemove(function(event) {
+                        var eye = $(".green_monkey_eye");
+                        var x = (eye.offset().left) + (eye.width() / 2);
+                        var y = (eye.offset().top) + (eye.height() / 2);
                         var rad = Math.atan2(event.pageX - x, event.pageY - y);
-                        var rot = (rad * (180 / Math.PI) * -1) + 90;
-                        // Apply the rotation to the eye element
+                        var rot = (rad * (180 / Math.PI) * -1) + 45;
                         eye.css({
-                            '-webkit-transform': 'rotate(' + rot + 'deg)',
-                            '-moz-transform': 'rotate(' + rot + 'deg)',
-                            '-ms-transform': 'rotate(' + rot + 'deg)',
-                            'transform': 'rotate(' + rot + 'deg)'
+                          '-webkit-transform': 'rotate(' + rot + 'deg)',
+                          '-moz-transform': 'rotate(' + rot + 'deg)',
+                          '-ms-transform': 'rotate(' + rot + 'deg)',
+                          'transform': 'rotate(' + rot + 'deg)'
                         });
+                      });
                     });
-                });
-            </script>
-            
-
+                    </script>
+              </div>
+              <div class="flip-card-back">
+                <img src="..\images\green_asl_abc\A.png" alt="Avatar" style="width:600px">
+              </div>
+            </div>
+          </div>
+        <script>
+            function flipCard(card) {
+          card.classList.toggle("flipped");
+        }
+        
+        </script>
     </div>
 </div>
 

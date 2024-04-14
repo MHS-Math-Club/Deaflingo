@@ -10,8 +10,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js"
             integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
             crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.0.1"></script>
-
 </head>
 <body>
 
@@ -19,7 +17,17 @@
     <img src="../images/Deaflingo_text.png" alt="Deaflingo Logo" class="logo">
 </div>
 
-<div id="predictedCharacter"></div>
+<div class="header">
+    <div class="options">
+        <span class="option">stats</span>
+        <span class="option">timed</span>
+        <span class="option">practice</span>
+    </div>
+    <div class="options">
+        <span class="option">10</span>
+        <span class="option">20</span>
+    </div>
+</div>
 
 <div class="wordcontainer">
     <div class="word">
@@ -51,9 +59,12 @@
                     <body>
                     
                     <section class="green_monkey_move-area">
-                      <div class='green_monkey_container'>
-                        <div class='green_monkey_eye'></div>
-                        <div class='green_monkey_eye'></div>
+                        <div class='green_monkey_ponder_container'>
+                            <div class='green_monkey_letter' font-size="64"><div id="predictedCharacter"></div></div>
+                        </div>
+                        <div class='green_monkey_container'>
+                            <div class='green_monkey_eye'></div>
+                            <div class='green_monkey_eye'></div>
                       </div>
                     </section>
                     <link>
@@ -66,7 +77,7 @@
               </div>
             </div>
           </div>
-    </div>
+=    </div>
 </div>
 
 <script src="{{url_for('static', filename='scripts/generatewords.js')}}"></script>

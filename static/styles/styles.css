@@ -13,10 +13,6 @@ body {
     text-align: center;
     font-family: Arial, sans-serif;
 }
-.half-size {
-    font-size: 50%;
-}
-
 .logo {
     width: 400px;
     height: auto;
@@ -79,12 +75,10 @@ body {
 }
 
 .green_monkey_move-area .card .front {
-    background: url('../../images/greenmonkey.png') no-repeat center center;
     background-size: contain;
 }
 
 .green_monkey_move-area .card .back {
-    background: url('../../images/hand.jpg') no-repeat center center;
     background-size: contain;
     transform: rotateY(180deg);
 }
@@ -150,9 +144,6 @@ body {
     backface-visibility: hidden;
 }
 
-.flip-card-front {
-}
-
 .flip-card-back {
     transform: rotateX(180deg);
 }
@@ -164,6 +155,20 @@ body {
     background-size: contain; /* Ensures the image is fully contained */
     position: relative;
 }
+
+.green_monkey_letter {
+    font-size: 64px; /* Adjust the size as needed */
+    flex-grow: 2.5;
+    font-family: 'Roboto Mono', monospace;
+    
+}
+
+.green_monkey_ponder_container {
+    position: absolute;
+    top: 24%;
+    left: 23%;
+}
+
 
 .green_monkey_container {
     position: absolute;
@@ -194,4 +199,8 @@ body {
 .wordcontainer .word div {
     display: inline-block;
     margin-right: 35px; /* Adjust the value to increase or decrease space */
+}
+
+.half-size {
+    font-size: 50%;
 }

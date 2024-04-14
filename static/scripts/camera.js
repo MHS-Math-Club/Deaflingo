@@ -11,6 +11,17 @@ let typedLetters = 0; // Variable to count typed letters
 
 let stream;
 
+var on_front = true;
+function flipCard(card) {
+  if (on_front) {
+    on_front = false;
+  } else {
+    on_front = true;
+  }
+  card.classList.toggle("flipped");
+}
+
+
 async function startWebcam() {
     try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -44,6 +55,7 @@ function updateStream() {
     photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
 
     const predictedCharacterElement = document.getElementById('predictedCharacter');
+    const helpImage = document.querySelector('.flip-card-back img');
 
     fetch('/json/output.json')
         .then(response => {
@@ -75,6 +87,9 @@ function updateStream() {
                             currentLetterSpan.style.color = 'green'; // Turn the letter green
                             currentLetterSpan.style.textDecoration = 'underline'; // Add underline to the letter
                             currentLetterIndex++; // Move to the next letter
+                            if (!on_front){(document.getElementById('flip-card').classList.toggle("flipped"));on_front = true;}
+
+                            helpImage.src = `../images/green_asl_abc/${wordSpans[currentLetterIndex].textContent}.png`;
                             typedLetters++; // Increment typed letters
                             holdTimer = null; // Reset the timer
                             if (typingStartTime === null) {

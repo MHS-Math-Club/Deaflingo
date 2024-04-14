@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,18 +21,14 @@
             background-color: white;
         }
         .title {
-            /*background-color: white;*/
             flex-grow: .75;
             padding: 20px;
             text-align: center;
             font-family: Arial, sans-serif;
         }
         .logo {
-            width: 250px; /* You can adjust the width as per your requirement */
-            height: auto; /* This will maintain the aspect ratio */
-            position: absolute;
-            left: 20%; /* 1/4 of the page width */
-            top: 1.25%; /* Align to the top of the page */
+            width: 400px;
+            height: auto;
         }
 
         .wordcontainer {
@@ -43,44 +36,43 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /*background-color: #e0e0e0;*/
         }
 
         .word {
             font-size: 5em;
-            font-family: 'Roboto Mono', monospace; /* Roboto Mono font */
+            font-family: 'Roboto Mono', monospace;
             flex-grow: .75;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: green;
         }
 
         .underline {
-            text-decoration: underline;
             color: black;
-            margin-right: 0.2em; /* add space between letters */
+            margin-right: 0.2em;
         }
 
-        .underline.green {
-            color: rgb(88, 204, 2);
+        .cursor {
+            color: black;
+            animation: blink-animation 1s infinite;
         }
 
+        @keyframes blink-animation {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
 
         .view {
-            /*background-color: #e0e0e0;*/
             display: flex;
-            flex-grow: 2.5; /* Made it larger */
+            flex-grow: 2.5;
         }
 
         .green_monkey .move-area {
-            background-color: #e0e0e0;
-            display: flex;
-            flex-grow: 2.5; /* Made it larger */
-            max-width: 400px; /* Adjust the width as needed */
-            max-height: 300px; /* Adjust the height as needed */
+            width: 400px;
+            height: 300px;
             background: url('greenmonkey.png') no-repeat center center;
-            background-size: contain; /* Ensures the image is fully contained */
+            background-size: contain;
             position: relative;
         }
 
@@ -95,17 +87,31 @@
             justify-content: center;
             align-items: center;
         }
-        .title {
-            border-bottom: 1px solid rgb(195, 195, 195);
+
+        .header {
+            position: absolute;
+            top: 40px;
+            right: 20px;
+            background-color: #cdde87ff;
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: fit-content;
         }
+        
+
         #photoElement {
             border-radius: 30px;
             border: 5px solid #b6b6b6;
         }
 
         .footer {
-            /*background-color: #cccccc;*/
             padding: 10px;
+        }
+        #predictedCharacter {
+            font-size: 20em; /* Adjust the font size as needed */
         }
     </style>
 </head>
@@ -115,12 +121,23 @@
     <img src="../images/Deaflingo_text.png" alt="Deaflingo Logo" class="logo">
 </div>
 
+<div class="header">
+    <div class="options">
+        <span class="option">stats</span>
+        <span class="option">timed</span>
+        <span class="option">practice</span>
+    </div>
+    <div class="options">
+        <span class="option">10</span>
+        <span class="option">20</span>
+    </div>
+</div>
+
+<div id="predictedCharacter"></div>
+
 <div class="wordcontainer">
     <div class="word">
-        <span class="underline">w</span>
-        <span class="underline">o</span>
-        <span class="underline">r</span>
-        <span class="underline">d</span>
+        <!-- Words will be populated here -->
     </div>
 </div>
 
@@ -142,7 +159,8 @@
             const videoElement = document.getElementById('videoElement');
             const canvasElement = document.getElementById('canvasElement');
             const photoElement = document.getElementById('photoElement');
-        
+            let currentLetterIndex = 0; // To keep track of the letter being typed
+
             let stream;
         
             async function startWebcam() {
@@ -182,7 +200,43 @@
                 });
         
                 photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
-                
+
+                const predictedCharacterElement = document.getElementById('predictedCharacter');
+
+                fetch('/json/output.json')
+                    .then(response => {
+                        if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Get the value of predicted_character
+                        const predictedCharacter = data.predicted_character.toLowerCase();
+
+                        // Update the content of the element with the predicted character
+                        predictedCharacterElement.textContent = predictedCharacter;
+
+                        // Select all the spans in the quote
+                        const wordSpans = document.querySelectorAll('.word span');
+
+                        // Check if the current letter index is valid
+                        if (currentLetterIndex < wordSpans.length) {
+                            // Get the current letter span
+                            const currentLetterSpan = wordSpans[currentLetterIndex];
+
+                            // Compare the current predicted character with the letter of the word
+                            if (predictedCharacter === currentLetterSpan.textContent.toLowerCase()) {
+                                currentLetterSpan.style.color = 'green'; // Turn the letter green
+                                currentLetterSpan.style.textDecoration = 'underline'; // Add underline to the letter
+                                currentLetterIndex++; // Move to the next letter
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching JSON:', error);
+                    });
+
                 // Capture photo repeatedly
                 setTimeout(capturePhoto, 33); // Capture photo every 1 second
             }
@@ -195,10 +249,10 @@
     <div class="answer">
         <style>
             .green_monkey_move-area {
-              width: 400px; /* Adjust the width as needed */
-              height: 300px; /* Adjust the height as needed */
+              width: 400px;
+              height: 300px;
               background: url('../images/greenmonkey.png') no-repeat center center;
-              background-size: contain; /* Ensures the image is fully contained */
+              background-size: contain;
               position: relative;
             }
             
@@ -213,17 +267,17 @@
               position: relative;
               display: inline-block;
               border-radius: 50%;
-              height: 35px; /* Adjust the eye size as needed */
-              width: 35px; /* Adjust the eye size as needed */
+              height: 35px;
+              width: 35px;
               
             }
             
             .green_monkey_eye:after {
               position: absolute;
-              bottom: 7px; /* Adjust the position of the eye as needed */
-              right: 4px; /* Adjust the position of the eye as needed */
-              width: 20px; /* Adjust the eye size as needed */
-              height: 20px; /* Adjust the eye size as needed */
+              bottom: 7px;
+              right: 4px;
+              width: 20px;
+              height: 20px;
               background: #515152ff;
               border-radius: 50%;
               content: " ";
@@ -262,26 +316,30 @@
     </div>
 </div>
 
-<div class="footer">
-    <h2>Footer</h2>
-</div>
+<style>
+    .wordcontainer .word div {
+        display: inline-block;
+        margin-right: 35px; /* Adjust the value to increase or decrease space */
+    }
+</style>
 
 <script>
-    let blueLettersCount = 0;
+// List of random words
+const words = ['apple', 'banana', 'orange', 'grape', 'peach', 'kiwi', 'strawberry', 'blueberry', 'watermelon', 'pineapple', 'cherry', 'mango', 'pear', 'plum'];
 
-    document.addEventListener('keydown', function(event) {
-        // Check if the '+' key is pressed
-        if (event.keyCode === 187 || event.keyCode === 107) { // Check for both '+' and '=' keycodes
-            // Make another letter Blue
-            const wordLetters = document.querySelectorAll('.underline');
-            
-            if (blueLettersCount < wordLetters.length) {
-                wordLetters[blueLettersCount].classList.add('green');
-                blueLettersCount++;
-            }
-        }
-    });
+// Function to generate a random word
+function generateRandomWord() {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    return words[randomIndex];
+}
+
+// Populate the word container with random words
+const wordContainer = document.querySelector('.wordcontainer .word');
+for (let i = 0; i < 3; i++) { // Populate 3 words
+    const word = generateRandomWord();
+    const spans = Array.from(word).map(letter => `<span>${letter}</span>`).join('');
+    wordContainer.innerHTML += `<div>${spans}</div>`;
+}
 </script>
-
 </body>
 </html>

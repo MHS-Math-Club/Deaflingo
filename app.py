@@ -84,11 +84,10 @@ def update():
             json.dump(data, json_file)
 
     # Convert numpy array back to PIL image
-    processed_with_text = Image.fromarray(
-        cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB))
+    processed = Image.fromarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)).transpose(Image.FLIP_LEFT_RIGHT)
 
     # Save the processed image with text as "processed.jpg"
-    processed_with_text.save("images/processed.jpg")
+    processed.save("images/processed.jpg")
 
 
 @app.route('/', methods=['GET', 'POST'])

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Four Divs Layout</title>
+    <title>Deaflingo</title>
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"
@@ -21,15 +21,14 @@
             background-color: white;
         }
         .title {
+            flex-grow: .75;
             padding: 20px;
-            text-align: left; /* Changed to left alignment */
+            text-align: center;
             font-family: Arial, sans-serif;
-            margin-left: 20px; /* Added margin to the left */
         }
-        
         .logo {
-            width: 400px; /* You can adjust the width as per your requirement */
-            height: auto; /* This will maintain the aspect ratio */
+            width: 400px;
+            height: auto;
         }
 
         .wordcontainer {
@@ -37,122 +36,81 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /*background-color: #e0e0e0;*/
         }
 
         .word {
             font-size: 5em;
-            font-family: 'Roboto Mono', monospace; /* Roboto Mono font */
+            font-family: 'Roboto Mono', monospace;
             flex-grow: .75;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: green;
         }
 
         .underline {
-            text-decoration: underline;
             color: black;
-            margin-right: 0.2em; /* add space between letters */
+            margin-right: 0.2em;
         }
 
-        .underline.green {
-            color: rgb(88, 204, 2);
+        .cursor {
+            color: black;
+            animation: blink-animation 1s infinite;
         }
 
+        @keyframes blink-animation {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
 
         .view {
-            /*background-color: #e0e0e0;*/
             display: flex;
-            flex-grow: 2.5; /* Made it larger */
+            flex-grow: 2.5;
         }
 
-        .green_monkey_move-area {
-            width: 400px; /* Adjust the width as needed */
-            height: 300px; /* Adjust the height as needed */
+        .green_monkey .move-area {
+            width: 400px;
+            height: 300px;
+            background: url('greenmonkey.png') no-repeat center center;
+            background-size: contain;
             position: relative;
-            perspective: 1000px;
         }
-        
-        .green_monkey_move-area .card {
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        
-        .green_monkey_move-area .card.flip {
-            transform: rotateX(180deg);
-        }
-        
-        .green_monkey_move-area .card .face {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            backface-visibility: hidden;
-            background-size: contain;
-        }
-        
-        .green_monkey_move-area .card .front {
-            background: url('../images/greenmonkey.png') no-repeat center center;
-            background-size: contain;
-        }
-        
-        .green_monkey_move-area .card .back {
-            background: url('../images/hand.jpg') no-repeat center center;
-            background-size: contain;
-            transform: rotateY(180deg);
-        }
+
 
         .camera,
         .answer {
             flex: 1;
             padding: 20px;
             text-align: center;
-            align: center;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            right: 20px;
+            background-color: #cdde87ff;
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: fit-content;
+        }
+        
+
         #photoElement {
             border-radius: 30px;
             border: 5px solid #b6b6b6;
         }
 
         .footer {
-            /*background-color: #cccccc;*/
             padding: 10px;
         }
-
-        .header {
-            position: absolute;
-            top: 40px; /* Adjust the distance from the top */
-            right: 20px; /* Adjust the distance from the right */
-            background-color: #cdde87ff;
-            padding: 10px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between; /* Adjusted alignment */
-            align-items: center;
-            width: fit-content; /* Adjust width */
-        }
-        
-  
-        .options {
-            display: flex;
-        }
-  
-        .option {
-            margin-right: 10px;
-            color: #444;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .header img {
-            width: 50px; /* Adjust image width */
-            height: auto; /* Maintain aspect ratio */
+        #predictedCharacter {
+            font-size: 20em; /* Adjust the font size as needed */
         }
     </style>
 </head>
@@ -174,12 +132,11 @@
     </div>
 </div>
 
+<div id="predictedCharacter"></div>
+
 <div class="wordcontainer">
     <div class="word">
-        <span class="underline">w</span>
-        <span class="underline">o</span>
-        <span class="underline">r</span>
-        <span class="underline">d</span>
+        <!-- Words will be populated here -->
     </div>
 </div>
 
@@ -201,7 +158,8 @@
             const videoElement = document.getElementById('videoElement');
             const canvasElement = document.getElementById('canvasElement');
             const photoElement = document.getElementById('photoElement');
-        
+            let currentLetterIndex = 0; // To keep track of the letter being typed
+
             let stream;
         
             async function startWebcam() {
@@ -232,18 +190,48 @@
                     type: 'POST',
                     url: '/',
                     data: $('#sendImage').serialize(), // Serialize form data
-                    success: function() {
-                        // Do nothing on success
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                    }
                 });
         
                 photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
+
+                const predictedCharacterElement = document.getElementById('predictedCharacter');
                 
+                fetch('/json/output.json')
+                    .then(response => {
+                        if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Get the value of predicted_character
+                        const predictedCharacter = data.predicted_character.toLowerCase();
+
+                        // Update the content of the element with the predicted character
+                        predictedCharacterElement.textContent = predictedCharacter;
+
+                        // Select all the spans in the quote
+                        const wordSpans = document.querySelectorAll('.word span');
+
+                        // Check if the current letter index is valid
+                        if (currentLetterIndex < wordSpans.length) {
+                            // Get the current letter span
+                            const currentLetterSpan = wordSpans[currentLetterIndex];
+
+                            // Compare the current predicted character with the letter of the word
+                            if (predictedCharacter === currentLetterSpan.textContent.toLowerCase()) {
+                                currentLetterSpan.style.color = 'green'; // Turn the letter green
+                                currentLetterSpan.style.textDecoration = 'underline'; // Add underline to the letter
+                                currentLetterIndex++; // Move to the next letter
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching JSON:', error);
+                    });
+
                 // Capture photo repeatedly
-                setTimeout(capturePhoto, 33); // Capture photo every 1 second
+                setTimeout(capturePhoto, 50);  // we can make this less slow but too fast = problems
             }
         
             // Start webcam when the page loads
@@ -254,10 +242,10 @@
     <div class="answer">
         <style>
             .green_monkey_move-area {
-              width: 400px; /* Adjust the width as needed */
-              height: 300px; /* Adjust the height as needed */
+              width: 400px;
+              height: 300px;
               background: url('../images/greenmonkey.png') no-repeat center center;
-              background-size: contain; /* Ensures the image is fully contained */
+              background-size: contain;
               position: relative;
             }
             
@@ -272,17 +260,17 @@
               position: relative;
               display: inline-block;
               border-radius: 50%;
-              height: 35px; /* Adjust the eye size as needed */
-              width: 35px; /* Adjust the eye size as needed */
+              height: 35px;
+              width: 35px;
               
             }
             
             .green_monkey_eye:after {
               position: absolute;
-              bottom: 7px; /* Adjust the position of the eye as needed */
-              right: 4px; /* Adjust the position of the eye as needed */
-              width: 20px; /* Adjust the eye size as needed */
-              height: 20px; /* Adjust the eye size as needed */
+              bottom: 7px;
+              right: 4px;
+              width: 20px;
+              height: 20px;
               background: #515152ff;
               border-radius: 50%;
               content: " ";
@@ -291,73 +279,60 @@
             </head>
             <body>
             
-            <section class="green_monkey_move-area" id="greenMonkeyArea">
-                <div class="card">
-                    <div class="face front">
-                        <div class='green_monkey_container'>
-                            <div class='green_monkey_eye'></div>
-                            <div class='green_monkey_eye'></div>
-                        </div>
-                    </div>
-                    <!-- Place your new image here -->
-                    <div class="face back" style="background-image: url('../images/hand.jpg');"></div>
-                </div>
+            <section class="green_monkey_move-area">
+              <div class='green_monkey_container'>
+                <div class='green_monkey_eye'></div>
+                <div class='green_monkey_eye'></div>
+              </div>
             </section>
             
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+            $(document).ready(function() {
+              $(".green_monkey_move-area").mousemove(function(event) {
+                var eye = $(".green_monkey_eye");
+                var x = (eye.offset().left) + (eye.width() / 2);
+                var y = (eye.offset().top) + (eye.height() / 2);
+                var rad = Math.atan2(event.pageX - x, event.pageY - y);
+                var rot = (rad * (180 / Math.PI) * -1) + 90;
+                eye.css({
+                  '-webkit-transform': 'rotate(' + rot + 'deg)',
+                  '-moz-transform': 'rotate(' + rot + 'deg)',
+                  '-ms-transform': 'rotate(' + rot + 'deg)',
+                  'transform': 'rotate(' + rot + 'deg)'
+                });
+              });
+            });
+            </script>
+            
+
     </div>
 </div>
 
-</div>
-
-<!-- <div class="footer">
-    <h2>Footer</h2>
-</div> -->
+<style>
+    .wordcontainer .word div {
+        display: inline-block;
+        margin-right: 35px; /* Adjust the value to increase or decrease space */
+    }
+</style>
 
 <script>
-    $(document).ready(function() {
-        $(".green_monkey_move-area").click(function() {
-            // Check if the card is already flipped
-            if ($(this).find('.card').hasClass('flip')) {
-                // If already flipped, revert to original state
-                $(this).find('.card').removeClass('flip');
-            } else {
-                // If not flipped, flip the card and hide other cards
-                $('.green_monkey_move-area .card').removeClass('flip');
-                $(this).find('.card').addClass('flip');
-            }
-        });
-    
-        $(".green_monkey_move-area").mousemove(function(event) {
-            var eye = $(".green_monkey_eye");
-            var x = (eye.offset().left) + (eye.width() / 2);
-            var y = (eye.offset().top) + (eye.height() / 2);
-            var rad = Math.atan2(event.pageX - x, event.pageY - y);
-            var rot = (rad * (180 / Math.PI) * -1) + 90;
-            eye.css({
-                '-webkit-transform': 'rotate(' + rot + 'deg)',
-                '-moz-transform': 'rotate(' + rot + 'deg)',
-                '-ms-transform': 'rotate(' + rot + 'deg)',
-                'transform': 'rotate(' + rot + 'deg)'
-            });
-        });
-    });
+// List of random words
+const words = ['apple', 'banana', 'orange', 'grape', 'peach', 'kiwi', 'strawberry', 'blueberry', 'watermelon', 'pineapple', 'cherry', 'mango', 'pear', 'plum'];
 
-    let blueLettersCount = 0;
+// Function to generate a random word
+function generateRandomWord() {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    return words[randomIndex];
+}
 
-    document.addEventListener('keydown', function(event) {
-        // Check if the '+' key is pressed
-        if (event.keyCode === 187 || event.keyCode === 107) { // Check for both '+' and '=' keycodes
-            // Make another letter Blue
-            const wordLetters = document.querySelectorAll('.underline');
-            
-            if (blueLettersCount < wordLetters.length) {
-                wordLetters[blueLettersCount].classList.add('green');
-                blueLettersCount++;
-            }
-        }
-    });
+// Populate the word container with random words
+const wordContainer = document.querySelector('.wordcontainer .word');
+for (let i = 0; i < 3; i++) { // Populate 3 words
+    const word = generateRandomWord();
+    const spans = Array.from(word).map(letter => `<span>${letter}</span>`).join('');
+    wordContainer.innerHTML += `<div>${spans}</div>`;
+}
 </script>
-
 </body>
 </html>

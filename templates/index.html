@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Four Divs Layout</title>
+    <title>Deaflingo</title>
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"
@@ -68,21 +68,41 @@
             flex-grow: 2.5;
         }
 
-        .green_monkey .move-area {
-            width: 400px;
-            height: 300px;
-            background: url('greenmonkey.png') no-repeat center center;
-            background-size: contain;
-            position: relative;
+        .green_monkey_move-area .card {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
         }
-
+        
+        .green_monkey_move-area .card.flip {
+            transform: rotateX(180deg);
+        }
+        
+        .green_monkey_move-area .card .face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            background-size: contain;
+        }
+        
+        .green_monkey_move-area .card .front {
+            background: url('../images/greenmonkey.png') no-repeat center center;
+            background-size: contain;
+        }
+        
+        .green_monkey_move-area .card .back {
+            background: url('../images/hand.jpg') no-repeat center center;
+            background-size: contain;
+            transform: rotateY(180deg);
+        }
 
         .camera,
         .answer {
             flex: 1;
             padding: 20px;
             text-align: center;
-            align: center;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -109,9 +129,6 @@
 
         .footer {
             padding: 10px;
-        }
-        #predictedCharacter {
-            font-size: 20em; /* Adjust the font size as needed */
         }
     </style>
 </head>
@@ -191,18 +208,12 @@
                     type: 'POST',
                     url: '/',
                     data: $('#sendImage').serialize(), // Serialize form data
-                    success: function() {
-                        // Do nothing on success
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                    }
                 });
         
                 photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
 
                 const predictedCharacterElement = document.getElementById('predictedCharacter');
-
+                
                 fetch('/json/output.json')
                     .then(response => {
                         if (!response.ok) {
@@ -238,7 +249,7 @@
                     });
 
                 // Capture photo repeatedly
-                setTimeout(capturePhoto, 33); // Capture photo every 1 second
+                setTimeout(capturePhoto, 50);  // we can make this less slow but too fast = problems
             }
         
             // Start webcam when the page loads
@@ -286,30 +297,50 @@
             </head>
             <body>
             
-            <section class="green_monkey_move-area">
-              <div class='green_monkey_container'>
-                <div class='green_monkey_eye'></div>
-                <div class='green_monkey_eye'></div>
-              </div>
-            </section>
+                <section class="green_monkey_move-area">
+                    <div class="card">
+                        <div class='green_monkey_container'>
+                            <div class='green_monkey_eye'></div>
+                            <div class='green_monkey_eye'></div>
+                        </div>
+                        <div class="face front"></div>
+                        <div class="face back"></div>
+                    </div>
+                </section>
+                
             
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
             <script>
-            $(document).ready(function() {
-              $(".green_monkey_move-area").mousemove(function(event) {
-                var eye = $(".green_monkey_eye");
-                var x = (eye.offset().left) + (eye.width() / 2);
-                var y = (eye.offset().top) + (eye.height() / 2);
-                var rad = Math.atan2(event.pageX - x, event.pageY - y);
-                var rot = (rad * (180 / Math.PI) * -1) + 90;
-                eye.css({
-                  '-webkit-transform': 'rotate(' + rot + 'deg)',
-                  '-moz-transform': 'rotate(' + rot + 'deg)',
-                  '-ms-transform': 'rotate(' + rot + 'deg)',
-                  'transform': 'rotate(' + rot + 'deg)'
+                $(document).ready(function() {
+                    $(".green_monkey_move-area").click(function() {
+                        // Check if the card is already flipped
+                        if ($(this).find('.card').hasClass('flip')) {
+                            // If already flipped, revert to original state
+                            $(this).find('.card').removeClass('flip');
+                        } else {
+                            // If not flipped, flip the card and hide other cards
+                            $('.green_monkey_move-area .card').removeClass('flip');
+                            $(this).find('.card').addClass('flip');
+                        }
+                    });
+
+                    $(".green_monkey_move-area").mousemove(function(event) {
+                        // Calculate the angle for the eye rotation based on mouse position
+                        var eye = $(this).find(".green_monkey_eye");
+                        var x = eye.offset().left + eye.width() / 2;
+                        var y = eye.offset().top + eye.height() / 2;
+                        var rad = Math.atan2(event.pageX - x, event.pageY - y);
+                        var rot = (rad * (180 / Math.PI) * -1) + 90;
+                        // Apply the rotation to the eye element
+                        eye.css({
+                            '-webkit-transform': 'rotate(' + rot + 'deg)',
+                            '-moz-transform': 'rotate(' + rot + 'deg)',
+                            '-ms-transform': 'rotate(' + rot + 'deg)',
+                            'transform': 'rotate(' + rot + 'deg)'
+                        });
+                    });
                 });
-              });
-            });
             </script>
             
 

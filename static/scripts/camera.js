@@ -3,7 +3,7 @@ const videoElement = document.getElementById('videoElement');
     const photoElement = document.getElementById('photoElement');
     let currentLetterIndex = 0; // To keep track of the letter being typed
     let holdTimer = null; // Timer for holding the same letter
-    const holdDuration = 300; // Duration in milliseconds for holding the same letter
+    const holdDuration = 150; // Duration in milliseconds for holding the same letter
 
     let stream;
 

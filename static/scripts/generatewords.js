@@ -1,6 +1,5 @@
 // List of random words
-const words = ['apple', 'banana', 'orange', 'grape', 'peach', 'kiwi', 'strawberry', 'blueberry', 'watermelon', 'pineapple', 'cherry', 'mango', 'pear', 'plum'];
-
+ 
 // Function to generate a random word
 function generateRandomWord() {
     const randomIndex = Math.floor(Math.random() * words.length);

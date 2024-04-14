@@ -86,7 +86,7 @@ const videoElement = document.getElementById('videoElement');
             });
 
         // Capture photo repeatedly
-        setTimeout(updateStream, 50); // we can make this less slow but too fast = problems
+        setTimeout(updateStream, 100); // we can make this less slow but too fast = problems
     }
 
     // Start webcam when the page loads

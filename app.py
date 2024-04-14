@@ -8,7 +8,7 @@ import pickle
 import mediapipe as mp
 import json
 
-app=Flask(__name__)
+app = Flask(__name__)
 
 model_dict = pickle.load(open('./model.p', 'rb'))
 model = model_dict['model']
@@ -33,14 +33,14 @@ def update():
     except FileNotFoundError:
         print("Error: The file 'raw.jpg' was not found.")
         return
-    
+
     frame = np.array(raw_image)
     H, W, _ = frame.shape
-    
+
     # Convert the frame from RGB to BGR
     frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     results = hands.process(frame_bgr)
-    
+
     if results.multi_hand_landmarks:
         # Take the first detected hand
         hand_landmarks = results.multi_hand_landmarks[0]
@@ -84,19 +84,20 @@ def update():
             json.dump(data, json_file)
 
     # Convert numpy array back to PIL image
-    processed_with_text = Image.fromarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB))
-    
+    processed_with_text = Image.fromarray(
+        cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB))
+
     # Save the processed image with text as "processed.jpg"
     processed_with_text.save("images/processed.jpg")
 
 
-@app.route('/', methods=['GET', 'POST'])    
+@app.route('/', methods=['GET', 'POST'])
 def camera():
     if request.method == 'POST' and request.form.get("photo") != None:
         base64_string = request.form.get("photo")
 
         image_bytes = base64.b64decode(base64_string)
-        
+
         in_memory_file = io.BytesIO(image_bytes)
         data = np.frombuffer(in_memory_file.getvalue(), dtype=np.uint8)
         color_image_flag = 1
@@ -109,10 +110,12 @@ def camera():
         return render_template('index.html')
     else:
         return render_template('index.html')
-    
+
+
 @app.route('/images/<path:path>')
 def static_proxy(path):
     return send_from_directory('images', path)
+
 
 @app.route('/json/<path:path>')
 def send_json(path):
@@ -121,6 +124,7 @@ def send_json(path):
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
-    
+
+
 if __name__ == "__main__":
-   app.run(debug=True, port=8001)
+    app.run(debug=True, port=8001)

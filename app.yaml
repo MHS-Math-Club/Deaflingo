@@ -1,6 +1,6 @@
 runtime: python
 env: flex
-entrypoint: gunicorn -b :$PORT main:app
+entrypoint: gunicorn -b :$PORT app:app
 
 runtime_config:
   operating_system: ubuntu22

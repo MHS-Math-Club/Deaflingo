@@ -29,7 +29,7 @@ labels_dict = {
 def update():
     # Open the raw image
     try:
-        raw_image = Image.open("images/raw.jpg")
+        raw_image = Image.open("images/raw.jpg").transpose(Image.FLIP_LEFT_RIGHT)
     except FileNotFoundError:
         print("Error: The file 'raw.jpg' was not found.")
         return
@@ -84,7 +84,7 @@ def update():
             json.dump(data, json_file)
 
     # Convert numpy array back to PIL image
-    processed = Image.fromarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)).transpose(Image.FLIP_LEFT_RIGHT)
+    processed = Image.fromarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB))
 
 
     # Save the processed image with text as "processed.jpg"

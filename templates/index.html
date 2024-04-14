@@ -1,19 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/mainpage.css') }}">
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deaflingo</title>
+    <title>Four Divs Layout</title>
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"
             integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
             crossorigin="anonymous"></script>
+            
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+        }
+        .title {
+            padding: 20px;
+            text-align: left; /* Changed to left alignment */
+            font-family: Arial, sans-serif;
+            margin-left: 20px; /* Added margin to the left */
+        }
+        
+        .logo {
+            width: 400px; /* You can adjust the width as per your requirement */
+            height: auto; /* This will maintain the aspect ratio */
+        }
 
+        .wordcontainer {
+            flex-grow: .75;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /*background-color: #e0e0e0;*/
+        }
+
+        .word {
+            font-size: 5em;
+            font-family: 'Roboto Mono', monospace; /* Roboto Mono font */
+            flex-grow: .75;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: green;
+        }
+
+        .underline {
+            text-decoration: underline;
+            color: black;
+            margin-right: 0.2em; /* add space between letters */
+        }
+
+        .underline.green {
+            color: rgb(88, 204, 2);
+        }
+
+
+        .view {
+            /*background-color: #e0e0e0;*/
+            display: flex;
+            flex-grow: 2.5; /* Made it larger */
+        }
+
+        .green_monkey_move-area {
+            width: 400px; /* Adjust the width as needed */
+            height: 300px; /* Adjust the height as needed */
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .green_monkey_move-area .card {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .green_monkey_move-area .card.flip {
+            transform: rotateX(180deg);
+        }
+        
+        .green_monkey_move-area .card .face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            background-size: contain;
+        }
+        
+        .green_monkey_move-area .card .front {
+            background: url('../images/greenmonkey.png') no-repeat center center;
+            background-size: contain;
+        }
+        
+        .green_monkey_move-area .card .back {
+            background: url('../images/hand.jpg') no-repeat center center;
+            background-size: contain;
+            transform: rotateY(180deg);
+        }
+
+        .camera,
+        .answer {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #photoElement {
+            border-radius: 30px;
+            border: 5px solid #b6b6b6;
+        }
+
+        .footer {
+            /*background-color: #cccccc;*/
+            padding: 10px;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px; /* Adjust the distance from the top */
+            right: 20px; /* Adjust the distance from the right */
+            background-color: #cdde87ff;
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between; /* Adjusted alignment */
+            align-items: center;
+            width: fit-content; /* Adjust width */
+        }
+        
+  
+        .options {
+            display: flex;
+        }
+  
+        .option {
+            margin-right: 10px;
+            color: #444;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .header img {
+            width: 50px; /* Adjust image width */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
 </head>
 <body>
 
@@ -21,8 +162,17 @@
     <img src="../images/Deaflingo_text.png" alt="Deaflingo Logo" class="logo">
 </div>
 
-
-<!-- <div id="predictedCharacter"></div> -->
+<div class="header">
+    <div class="options">
+        <span class="option">stats</span>
+        <span class="option">timed</span>
+        <span class="option">practice</span>
+    </div>
+    <div class="options">
+        <span class="option">10</span>
+        <span class="option">20</span>
+    </div>
+</div>
 
 <div class="wordcontainer">
     <div class="word">
@@ -47,29 +197,167 @@
             <input id="imageString" type="hidden" name="photo"/>
         </form>
 
-        <script src="{{url_for('static', filename='scripts/camera.js')}}"></script>
+        <script>
+            const videoElement = document.getElementById('videoElement');
+            const canvasElement = document.getElementById('canvasElement');
+            const photoElement = document.getElementById('photoElement');
+        
+            let stream;
+        
+            async function startWebcam() {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    videoElement.srcObject = stream;
+                    capturePhoto(); // Automatically capture photo on page load
+                } catch (error) {
+                    console.error('Error accessing webcam:', error);
+                }
+            }
+        
+            function capturePhoto() {
+                canvasElement.width = videoElement.videoWidth;
+                canvasElement.height = videoElement.videoHeight;
+                canvasElement.getContext('2d').drawImage(videoElement, 0, 0);
+                const photoDataUrl = canvasElement.toDataURL('image/jpeg');
+                photoElement.src = photoDataUrl;
+                photoElement.style.display = 'block';
+        
+                const base64String = photoDataUrl.split(',')[1];
+        
+                // Set base64 string in the form input field
+                document.getElementById("imageString").value = base64String;
+        
+                // AJAX form submission
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: $('#sendImage').serialize(), // Serialize form data
+                    success: function() {
+                        // Do nothing on success
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+        
+                photoElement.src = 'images/processed.jpg?' + new Date().getTime(); // Adding timestamp to force image reload
+                
+                // Capture photo repeatedly
+                setTimeout(capturePhoto, 33); // Capture photo every 1 second
+            }
+        
+            // Start webcam when the page loads
+            startWebcam();
+        </script>
         <!-- End of Camera Stuff -->
     </div>
     <div class="answer">
-            <section class="green_monkey_move-area">
-              <div class='green_monkey_container'>
-                <div class='green_monkey_eye'></div>
-                <div class='green_monkey_eye'></div>
-              </div>
+        <style>
+            .green_monkey_move-area {
+              width: 400px; /* Adjust the width as needed */
+              height: 300px; /* Adjust the height as needed */
+              background: url('../images/greenmonkey.png') no-repeat center center;
+              background-size: contain; /* Ensures the image is fully contained */
+              position: relative;
+            }
+            
+            .green_monkey_container {
+              position: absolute;
+              top: 32%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+            
+            .green_monkey_eye {
+              position: relative;
+              display: inline-block;
+              border-radius: 50%;
+              height: 35px; /* Adjust the eye size as needed */
+              width: 35px; /* Adjust the eye size as needed */
+              
+            }
+            
+            .green_monkey_eye:after {
+              position: absolute;
+              bottom: 7px; /* Adjust the position of the eye as needed */
+              right: 4px; /* Adjust the position of the eye as needed */
+              width: 20px; /* Adjust the eye size as needed */
+              height: 20px; /* Adjust the eye size as needed */
+              background: #515152ff;
+              border-radius: 50%;
+              content: " ";
+            }
+            </style>
+            </head>
+            <body>
+            
+            <section class="green_monkey_move-area" id="greenMonkeyArea">
+                <div class="card">
+                    <div class="face front">
+                        <div class='green_monkey_container'>
+                            <div class='green_monkey_eye'></div>
+                            <div class='green_monkey_eye'></div>
+                        </div>
+                    </div>
+                    <!-- Place your new image here -->
+                    <div class="face back" style="background-image: url('../images/hand.jpg');"></div>
+                </div>
             </section>
             
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="{{url_for('static', filename='scripts/monkeyeyes.js')}}"></script>
-            
-
     </div>
 </div>
 
-<div class="footer">
-    <h2>Footer</h2>
 </div>
 
-<script src="{{url_for('static', filename='scripts/turngreen.js')}}"></script>
+<!-- <div class="footer">
+    <h2>Footer</h2>
+</div> -->
+
+<script>
+    $(document).ready(function() {
+        $(".green_monkey_move-area").click(function() {
+            // Check if the card is already flipped
+            if ($(this).find('.card').hasClass('flip')) {
+                // If already flipped, revert to original state
+                $(this).find('.card').removeClass('flip');
+            } else {
+                // If not flipped, flip the card and hide other cards
+                $('.green_monkey_move-area .card').removeClass('flip');
+                $(this).find('.card').addClass('flip');
+            }
+        });
+    
+        $(".green_monkey_move-area").mousemove(function(event) {
+            var eye = $(".green_monkey_eye");
+            var x = (eye.offset().left) + (eye.width() / 2);
+            var y = (eye.offset().top) + (eye.height() / 2);
+            var rad = Math.atan2(event.pageX - x, event.pageY - y);
+            var rot = (rad * (180 / Math.PI) * -1) + 90;
+            eye.css({
+                '-webkit-transform': 'rotate(' + rot + 'deg)',
+                '-moz-transform': 'rotate(' + rot + 'deg)',
+                '-ms-transform': 'rotate(' + rot + 'deg)',
+                'transform': 'rotate(' + rot + 'deg)'
+            });
+        });
+    });
+
+    let blueLettersCount = 0;
+
+    document.addEventListener('keydown', function(event) {
+        // Check if the '+' key is pressed
+        if (event.keyCode === 187 || event.keyCode === 107) { // Check for both '+' and '=' keycodes
+            // Make another letter Blue
+            const wordLetters = document.querySelectorAll('.underline');
+            
+            if (blueLettersCount < wordLetters.length) {
+                wordLetters[blueLettersCount].classList.add('green');
+                blueLettersCount++;
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

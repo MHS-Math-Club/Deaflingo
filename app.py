@@ -84,7 +84,7 @@ def update():
             json.dump(data, json_file)
 
     # Convert numpy array back to PIL image
-    processed = Image.fromarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)).transpose(Image.FLIP_LEFT_RIGHT)
+    processed = Image.fromarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB))
 
 
     # Save the processed image with text as "processed.jpg"

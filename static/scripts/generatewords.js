@@ -13,3 +13,7 @@ for (let i = 0; i < 3; i++) { // Populate 3 words
     const spans = Array.from(word).map(letter => `<span>${letter}</span>`).join('');
     wordContainer.innerHTML += `<div>${spans}</div>`;
 }
+
+const helpImage = document.querySelector('.flip-card-back img');
+const wordSpans = document.querySelectorAll('.word span');
+helpImage.src = `../images/green_asl_abc/${wordSpans[0].textContent}.png`;

@@ -1,2 +1,4 @@
 *.jpg
 *.pyc
+*.json
+.DS_Store

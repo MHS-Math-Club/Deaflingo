@@ -1,4 +1,4 @@
-# Deaflingo Web App - Local Setup and Run Guide
+# Deaflingo Local Setup
 
 Welcome to Deaflingo! This guide will walk you through the steps to set up and run the Deaflingo web application locally on your machine.
 

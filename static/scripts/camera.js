@@ -86,10 +86,14 @@ function updateStream() {
                         holdTimer = setTimeout(() => {
                             currentLetterSpan.style.color = 'green'; // Turn the letter green
                             currentLetterSpan.style.textDecoration = 'underline'; // Add underline to the letter
-                            currentLetterIndex++; // Move to the next letter
-                            if (!on_front){(document.getElementById('flip-card').classList.toggle("flipped"));on_front = true;}
+                            if (currentLetterIndex < wordSpans.length) {
+                                currentLetterIndex++;
+                            } // Move to the next letter
 
-                            helpImage.src = `../images/green_asl_abc/${wordSpans[currentLetterIndex].textContent}.png`;
+                            if (!on_front){(document.getElementById('flip-card').classList.toggle("flipped"));on_front = true;}
+                            if (wordSpans[currentLetterIndex] != undefined) {
+                                helpImage.src = `../images/green_asl_abc/${wordSpans[currentLetterIndex].textContent}.png`;
+                            }
                             typedLetters++; // Increment typed letters
                             holdTimer = null; // Reset the timer
                             if (typingStartTime === null) {
@@ -97,6 +101,7 @@ function updateStream() {
                             }
                             typingEndTime = Date.now(); // Update typing end time with each typed letter
                             // Check if all letters are typed
+                            console.log(currentLetterIndex)
                             if (currentLetterIndex === wordSpans.length) {
                                 // Clear the word element
                                 wordElement.textContent = '';

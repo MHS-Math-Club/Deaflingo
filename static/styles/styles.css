@@ -8,18 +8,14 @@ body {
     background-color: white;
 }
 .title {
-    /*background-color: white;*/
     flex-grow: .75;
     padding: 20px;
     text-align: center;
     font-family: Arial, sans-serif;
 }
 .logo {
-    width: 250px; /* You can adjust the width as per your requirement */
-    height: auto; /* This will maintain the aspect ratio */
-    position: absolute;
-    left: 20%; /* 1/4 of the page width */
-    top: 1.25%; /* Align to the top of the page */
+    width: 400px;
+    height: auto;
 }
 
 .wordcontainer {
@@ -27,48 +23,67 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /*background-color: #e0e0e0;*/
 }
 
 .word {
     font-size: 5em;
-    font-family: 'Roboto Mono', monospace; /* Roboto Mono font */
+    font-family: 'Roboto Mono', monospace;
     flex-grow: .75;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: green;
 }
 
 .underline {
-    text-decoration: underline;
     color: black;
-    margin-right: 0.2em; /* add space between letters */
+    margin-right: 0.2em;
 }
 
-.underline.green {
-    color: rgb(88, 204, 2);
+.cursor {
+    color: black;
+    animation: blink-animation 1s infinite;
 }
 
+@keyframes blink-animation {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
 
 .view {
-    /*background-color: #e0e0e0;*/
     display: flex;
-    flex-grow: 2.5; /* Made it larger */
+    flex-grow: 2.5;
 }
 
+.green_monkey_move-area .card {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
 
-.green_monkey .move-area {
-    background-color: #e0e0e0;
-    display: flex;
-    flex-grow: 2.5; /* Made it larger */
-    max-width: 400px; /* Adjust the width as needed */
-    max-height: 300px; /* Adjust the height as needed */
+.green_monkey_move-area .card.flip {
+    transform: rotateX(180deg);
+}
+
+.green_monkey_move-area .card .face {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    background-size: contain;
+}
+
+.green_monkey_move-area .card .front {
     background: url('../../images/greenmonkey.png') no-repeat center center;
-    background-size: contain; /* Ensures the image is fully contained */
-    position: relative;
+    background-size: contain;
 }
 
+.green_monkey_move-area .card .back {
+    background: url('../../images/hand.jpg') no-repeat center center;
+    background-size: contain;
+    transform: rotateY(180deg);
+}
 
 .camera,
 .answer {
@@ -79,35 +94,77 @@ body {
     justify-content: center;
     align-items: center;
 }
-.title {
-    border-bottom: 1px solid rgb(195, 195, 195);
+
+.header {
+    position: absolute;
+    top: 40px;
+    right: 20px;
+    background-color: #cdde87ff;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: fit-content;
 }
+
+
 #photoElement {
     border-radius: 30px;
     border: 5px solid #b6b6b6;
 }
 
 .footer {
-    /*background-color: #cccccc;*/
     padding: 10px;
 }
 
-#predictedCharacter {
-        font-size: 20em; /* Adjust the font size as needed */
+.flip-card {
+    background-color: transparent;
+    width: 600px;
+    height: 430px;
+    perspective: 1000px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+    transform: rotateX(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+}
+
+.flip-card-front {
+}
+
+.flip-card-back {
+    transform: rotateX(180deg);
 }
 
 .green_monkey_move-area {
-    width: 400px; /* Adjust the width as needed */
-    height: 300px; /* Adjust the height as needed */
-    background: url('../../images/greenmonkey.png') no-repeat center center;
+    width: 600px; /* Adjust the width as needed */
+    height: 450px; /* Adjust the height as needed */
+    background: url('../../images/flashcard_top.png') no-repeat center center;
     background-size: contain; /* Ensures the image is fully contained */
     position: relative;
 }
 
 .green_monkey_container {
     position: absolute;
-    top: 32%;
-    left: 50%;
+    top: 54%;
+    left: 73%;
     transform: translate(-50%, -50%);
 }
 
@@ -115,18 +172,22 @@ body {
     position: relative;
     display: inline-block;
     border-radius: 50%;
-    height: 35px; /* Adjust the eye size as needed */
-    width: 35px; /* Adjust the eye size as needed */
-    
+    height: 40px; /* Adjust the eye size as needed */
+    width: 29px; /* Adjust the eye size as needed */
 }
 
 .green_monkey_eye:after {
     position: absolute;
     bottom: 7px; /* Adjust the position of the eye as needed */
     right: 4px; /* Adjust the position of the eye as needed */
-    width: 20px; /* Adjust the eye size as needed */
-    height: 20px; /* Adjust the eye size as needed */
+    width: 15px; /* Adjust the eye size as needed */
+    height: 15px; /* Adjust the eye size as needed */
     background: #515152ff;
     border-radius: 50%;
     content: " ";
+}
+
+.wordcontainer .word div {
+    display: inline-block;
+    margin-right: 35px; /* Adjust the value to increase or decrease space */
 }

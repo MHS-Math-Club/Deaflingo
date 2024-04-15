@@ -5,6 +5,11 @@ Welcome to Deaflingo! This guide will walk you through the steps to set up and r
 ## Prerequisites
 
 - Python 3.11.x installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
+  
+- Git LFS installed. Follow the steps below to install Git LFS:
+    - Install Git LFS: `sudo apt-get install git-lfs`.
+    - Set up Git LFS for your user account: `git lfs install`.
+    - Clone the project again.
 
 ## Setup Instructions
 
@@ -57,4 +62,3 @@ To stop the Flask development server, press `CTRL+C` in the command line where t
 - It's recommended to use a virtual environment for Python projects to manage dependencies and avoid conflicts with system-wide packages. You can create and activate a virtual environment using `venv` or `virtualenv` as per your preference.
 
 - If you encounter any issues during setup or running the application, feel free to reach out for assistance.
-

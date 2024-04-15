@@ -7,8 +7,8 @@ Welcome to Deaflingo! This guide will walk you through the steps to set up and r
 - Python 3.11.x installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
   
 - Git LFS installed. Follow the steps below to install Git LFS:
-    - Install Git LFS: `sudo apt-get install git-lfs`.
-    - Set up Git LFS for your user account: `git lfs install`.
+  - Install [Git LFS](https://git-lfs.com/).
+  - Set up Git LFS for your user account by running: `git lfs install`.
 
 ## Setup Instructions
 

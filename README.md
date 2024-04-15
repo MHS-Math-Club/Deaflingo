@@ -2,6 +2,12 @@
 
 Welcome to Deaflingo! This guide will walk you through the steps to set up and run the Deaflingo web application locally on your machine.
 
+## Demo
+
+For a demonstration of Deaflingo in action, watch our video on YouTube:
+
+[![Deaflingo Demo Video](https://img.youtube.com/vi/7jd46k0xQxo/0.jpg)](https://youtu.be/7jd46k0xQxo)
+
 ## Prerequisites
 
 - Python 3.11.x installed on your system. You can download it from [python.org](https://www.python.org/downloads/).

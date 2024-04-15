@@ -26,6 +26,8 @@ Welcome to Deaflingo! This guide will walk you through the steps to set up and r
 
     This command will recursively install all the dependencies required for the Deaflingo web app.
 
+    **Note:** Ensure that your pip corresponds to your Python 3.11.x installation.
+
 ## Running the Application
 
 1. Once all the dependencies are installed, you can start the Deaflingo web app by running the following command:

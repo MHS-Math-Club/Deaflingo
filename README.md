@@ -9,7 +9,6 @@ Welcome to Deaflingo! This guide will walk you through the steps to set up and r
 - Git LFS installed. Follow the steps below to install Git LFS:
     - Install Git LFS: `sudo apt-get install git-lfs`.
     - Set up Git LFS for your user account: `git lfs install`.
-    - Clone the project again.
 
 ## Setup Instructions
 

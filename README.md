@@ -1,4 +1,4 @@
-⚠️ Notice: We're currently facing an issue where this repository has exceeded its data quota. The account responsible for Git LFS bandwidth needs to purchase more data packs to restore access. As a result, you won't be able to clone the data or model file at the moment.
+⚠️ Notice: We're currently facing an issue where this repository has exceeded its data quota. The account responsible for Git LFS bandwidth needs to purchase more data packs to restore access. As a result, you won't be able to clone the data or model file at the moment. We are looking at possible options for the future of Deaflingo currently so we have not paid for more storage or bandwidth yet. In the future we would run the model via an external server so this won't be an issue.
 
 # Deaflingo Local Setup
 
